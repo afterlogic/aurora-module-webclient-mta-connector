@@ -1,0 +1,25 @@
+<div class="row" data-bind="visible: id() === 0">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: email" />
+	</span>
+</div>
+<div class="row" data-bind="visible: id() !== 0">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_MEMBER'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: memberEmail" />
+	</span>
+	<span class="buttons" style="margin: 0 0 0 25px;">
+		<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_NEW_MEMBER'}, click: addNewMember"></span>
+	</span>
+</div>
+<div class="row" data-bind="visible: id() !== 0">
+	<span class="label"></span>
+	<span class="value">
+		<select size="9" tabindex="15" class="input" style="width: 300px;" multiple="multiple"
+				data-bind="options: members, selectedOptions: selectedMembers"></select>
+	</span>
+	<span class="buttons" style="vertical-align: bottom; display:  inline-block; margin: 0 0 4px 25px;">
+		<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_DELETE_MEMBERS'}, click: deleteMembers"></span>
+	</span>
+</div>
