@@ -59,7 +59,6 @@ CEditMailingListView.prototype.parse = function (iEntityId, oResult)
 CEditMailingListView.prototype.getParametersForSave = function ()
 {
 	return {
-		TenantId: UserSettings.SingleTenantId,
 		Email: this.email()
 	};
 };
