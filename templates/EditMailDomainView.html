@@ -1,0 +1,14 @@
+<div class="row" data-bind="visible: id() === 0">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_MAILDOMAIN'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: domain" />
+	</span>
+</div>
+<div class="row" data-bind="visible: id() !== 0">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_MAILDOMAIN'}"></span>
+	<span class="value" data-bind="text: domain"></span>
+</div>
+<div class="row" data-bind="visible: id() !== 0">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_MAILDOMAIN_USERS_COUNT'}"></span>
+	<span class="value" data-bind="text: count"></span>
+</div>

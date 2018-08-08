@@ -37,6 +37,28 @@ module.exports = function (oAppData) {
 					TextUtils.i18n('%MODULENAME%/LABEL_SETTINGS_TAB_ALIASES')
 				]);
 				ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelEntityType', [{
+					Type: 'Domain',
+					ScreenHash: 'domain',
+					LinkTextKey: '%MODULENAME%/HEADING_MAILDOMAIN_SETTINGS_TABNAME',
+					EditView: require('modules/%ModuleName%/js/views/EditMailDomainView.js'),
+					
+					ServerModuleName: Settings.ServerModuleName,
+					GetListRequest: 'GetDomains',
+					GetRequest: 'GetDomain',
+					CreateRequest: 'CreateDomain',
+					DeleteRequest: 'DeleteDomain',
+					
+					NoEntitiesFoundText: TextUtils.i18n('%MODULENAME%/INFO_NO_ENTITIES_FOUND_MAILDOMAIN'),
+					ActionCreateText: TextUtils.i18n('%MODULENAME%/ACTION_CREATE_ENTITY_MAILDOMAIN'),
+					ReportSuccessCreateText: TextUtils.i18n('%MODULENAME%/REPORT_CREATE_ENTITY_MAILDOMAIN'),
+					ErrorCreateText: TextUtils.i18n('%MODULENAME%/ERROR_CREATE_ENTITY_MAILDOMAIN'),
+					CommonSettingsHeadingText: TextUtils.i18n('%MODULENAME%/HEADING_EDIT_MAILDOMAIN'),
+					ActionDeleteText: TextUtils.i18n('%MODULENAME%/ACTION_DELETE_MAILDOMAIN'),
+					ConfirmDeleteLangConst: '%MODULENAME%/CONFIRM_DELETE_MAILDOMAIN_PLURAL',
+					ReportSuccessDeleteLangConst: '%MODULENAME%/REPORT_DELETE_ENTITIES_MAILDOMAIN_PLURAL',
+					ErrorDeleteLangConst: '%MODULENAME%/ERROR_DELETE_ENTITIES_MAILDOMAIN_PLURAL'
+				}]);
+				ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelEntityType', [{
 					Type: 'MailingList',
 					ScreenHash: 'mailinglists',
 					LinkTextKey: '%MODULENAME%/HEADING_MAILINGLISTS_SETTINGS_TABNAME',
