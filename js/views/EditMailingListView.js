@@ -9,7 +9,6 @@ var
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
-	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	
 	Cache = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
@@ -23,11 +22,7 @@ function CEditMailingListView()
 	this.sHeading = TextUtils.i18n('%MODULENAME%/HEADING_CREATE_MAILINGLIST');
 	this.id = ko.observable(0);
 	this.email = ko.observable('');
-	this.domains = ko.computed(function () {
-		return _.map(Cache.domains(), function (oDomain) {
-			return oDomain.Name;
-		});
-	}, this);
+	this.domains = Cache.domains;
 	this.selectedDomain = ko.observableArray('');
 	this.memberEmail = ko.observable('');
 	this.members = ko.observableArray([]);
@@ -40,7 +35,8 @@ CEditMailingListView.prototype.getCurrentValues = function ()
 {
 	return [
 		this.id(),
-		this.email()
+		this.email(),
+		this.selectedDomain()
 	];
 };
 
@@ -48,6 +44,7 @@ CEditMailingListView.prototype.clearFields = function ()
 {
 	this.id(0);
 	this.email('');
+	this.selectedDomain('');
 };
 
 CEditMailingListView.prototype.parse = function (iEntityId, oResult)
@@ -66,7 +63,8 @@ CEditMailingListView.prototype.parse = function (iEntityId, oResult)
 CEditMailingListView.prototype.getParametersForSave = function ()
 {
 	return {
-		Email: this.email()
+		Email: this.email() + '@' + this.selectedDomain().Name,
+		DomainId: this.selectedDomain().Id
 	};
 };
 

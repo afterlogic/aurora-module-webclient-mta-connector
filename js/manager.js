@@ -82,6 +82,10 @@ module.exports = function (oAppData) {
 					ReportSuccessDeleteLangConst: '%MODULENAME%/REPORT_DELETE_ENTITIES_MAILINGLIST_PLURAL',
 					ErrorDeleteLangConst: '%MODULENAME%/ERROR_DELETE_ENTITIES_MAILINGLIST_PLURAL'
 				}]);
+				ModulesManager.run('AdminPanelWebclient', 'changeAdminPanelEntityData', [{
+					Type: 'User',
+					EditView: require('modules/%ModuleName%/js/views/EditUserView.js')
+				}]);
 			}
 		};
 	}
