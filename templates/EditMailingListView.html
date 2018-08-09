@@ -1,7 +1,8 @@
 <div class="row" data-bind="visible: id() === 0">
 	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}"></span>
 	<span class="value">
-		<input class="input" type="text" data-bind="value: email" />
+		<input class="input" type="text" data-bind="value: email" style="width: 200px;" />
+		<select class="input" data-bind="options: domains, selectedOptions: selectedDomain" style="width: 200px;"></select>
 	</span>
 </div>
 <div class="row" data-bind="visible: id() !== 0">

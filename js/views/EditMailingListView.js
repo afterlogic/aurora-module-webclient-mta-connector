@@ -11,6 +11,7 @@ var
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	
+	Cache = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
@@ -22,6 +23,12 @@ function CEditMailingListView()
 	this.sHeading = TextUtils.i18n('%MODULENAME%/HEADING_CREATE_MAILINGLIST');
 	this.id = ko.observable(0);
 	this.email = ko.observable('');
+	this.domains = ko.computed(function () {
+		return _.map(Cache.domains(), function (oDomain) {
+			return oDomain.Name;
+		});
+	}, this);
+	this.selectedDomain = ko.observableArray('');
 	this.memberEmail = ko.observable('');
 	this.members = ko.observableArray([]);
 	this.selectedMembers = ko.observableArray([]);

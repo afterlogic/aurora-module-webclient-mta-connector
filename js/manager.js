@@ -8,6 +8,7 @@ module.exports = function (oAppData) {
 		
 		ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 
+		Cache = require('modules/%ModuleName%/js/Cache.js'),
 		Settings = require('modules/%ModuleName%/js/Settings.js')
 	;
 	
@@ -23,6 +24,7 @@ module.exports = function (oAppData) {
 			 */
 			start: function (ModulesManager)
 			{
+				Cache.init();
 				ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelTab', [
 					function(resolve) {
 						require.ensure(
@@ -46,7 +48,7 @@ module.exports = function (oAppData) {
 					GetListRequest: 'GetDomains',
 					GetRequest: 'GetDomain',
 					CreateRequest: 'CreateDomain',
-					DeleteRequest: 'DeleteDomain',
+					DeleteRequest: 'DeleteDomains',
 					
 					NoEntitiesFoundText: TextUtils.i18n('%MODULENAME%/INFO_NO_ENTITIES_FOUND_MAILDOMAIN'),
 					ActionCreateText: TextUtils.i18n('%MODULENAME%/ACTION_CREATE_ENTITY_MAILDOMAIN'),
