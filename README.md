@@ -1,5 +1,4 @@
-# aurora-module-webclient-mailsuite
-Aurora Mail Suite web client module
+# Aurora mta connector web client module
 
 # License
-This module is licensed under AGPLv3 license if free version of the product is used or AfterLogic Software License if commercial version of the product was purchased.
+This module is licensed under AfterLogic Software License. Please read LICENSE for more information.
