@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-	ServerModuleName: 'MailSuite',
-	HashModuleName: 'mailsuite',
+	ServerModuleName: 'MtaConnector',
+	HashModuleName: 'mta-connector',
 	
 	/**
 	 * Initializes settings from AppData object sections.
