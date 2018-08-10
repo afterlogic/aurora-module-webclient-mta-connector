@@ -1,10 +1,10 @@
 {
-	"name": "afterlogic/aurora-module-webclient-mailsuite",
+	"name": "afterlogic/aurora-module-webclient-mta-connector",
 	"type": "aurora-module",
 	"require":{
 		"afterlogic/aurora-framework": "~0.9.0"
 	},
 	"extra": {
-		"installer-name": "MailSuiteWebclient"
+		"installer-name": "MtaConnectorWebclient"
 	}
 }
