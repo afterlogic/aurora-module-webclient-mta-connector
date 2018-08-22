@@ -9,7 +9,7 @@ var
 	
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
-	
+	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Cache = require('modules/%ModuleName%/js/Cache.js')
 ;
 
@@ -24,6 +24,7 @@ function CEditUserView()
 	this.domains = Cache.domains;
 	this.selectedDomain = ko.observableArray('');
 	this.password = ko.observable('');
+	this.quota = ko.observable('');
 	this.aRoles = [
 		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_ADMINISTRATOR'), value: Enums.UserRole.SuperAdmin},
 		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_USER'), value: Enums.UserRole.NormalUser},
@@ -31,6 +32,7 @@ function CEditUserView()
 	];
 	this.role = ko.observable(Enums.UserRole.NormalUser);
 	this.writeSeparateLog = ko.observable(false);
+	this.QuotaKiloMultiplier = 1024;
 	
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this});
 }
@@ -54,6 +56,8 @@ CEditUserView.prototype.clearFields = function ()
 	this.id(0);
 	this.publicId('');
 	this.selectedDomain('');
+	this.password('');
+	this.quota('');
 	this.role(Enums.UserRole.NormalUser);
 	this.writeSeparateLog(false);
 };
@@ -66,6 +70,8 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 		this.publicId(oResult.PublicId);
 		this.role(oResult.Role);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
+		this.quota('');
+		this.getUserQuota(iEntityId);
 	}
 	else
 	{
@@ -90,6 +96,7 @@ CEditUserView.prototype.getParametersForSave = function ()
 		PublicId: $.trim(this.publicId()) + '@' + this.selectedDomain().Name,
 		DomainId: this.selectedDomain().Id,
 		Password: this.password(),
+		Quota: this.quota() * this.QuotaKiloMultiplier,
 		Role: this.role(),
 		WriteSeparateLog: this.writeSeparateLog()
 	};
@@ -107,6 +114,27 @@ CEditUserView.prototype.saveEntity = function (aParents, oRoot)
 			oParent.save(oRoot);
 		}
 	});
+};
+
+CEditUserView.prototype.getUserQuota = function (iUserId)
+{
+	Ajax.send(
+		'MtaConnector',
+		'GetUserQuota',
+		{
+			'UserId': iUserId
+		},
+		this.onGetUserQuotaResponse,
+		this
+	);
+};
+
+CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
+{
+	if (oResponse && oResponse.Result)
+	{
+		this.quota(oResponse.Result / this.QuotaKiloMultiplier);
+	}
 };
 
 module.exports = new CEditUserView();
