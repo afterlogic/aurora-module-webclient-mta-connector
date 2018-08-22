@@ -91,9 +91,11 @@ CEditUserView.prototype.isValidSaveData = function ()
 
 CEditUserView.prototype.getParametersForSave = function ()
 {
+	var sDomain = this.id() === 0 ?  '@' + this.selectedDomain().Name : '';
+
 	return {
 		Id: this.id(),
-		PublicId: $.trim(this.publicId()) + '@' + this.selectedDomain().Name,
+		PublicId: $.trim(this.publicId()) + sDomain,
 		DomainId: this.selectedDomain().Id,
 		Password: this.password(),
 		Quota: this.quota() * this.QuotaKiloMultiplier,
