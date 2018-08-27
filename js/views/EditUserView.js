@@ -10,7 +10,8 @@ var
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
-	Cache = require('modules/%ModuleName%/js/Cache.js')
+	Cache = require('modules/%ModuleName%/js/Cache.js'),
+	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
 /**
@@ -24,7 +25,7 @@ function CEditUserView()
 	this.domains = Cache.domains;
 	this.selectedDomain = ko.observableArray('');
 	this.password = ko.observable('');
-	this.quota = ko.observable('');
+	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
 	this.aRoles = [
 		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_ADMINISTRATOR'), value: Enums.UserRole.SuperAdmin},
 		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_USER'), value: Enums.UserRole.NormalUser},
@@ -57,7 +58,7 @@ CEditUserView.prototype.clearFields = function ()
 	this.publicId('');
 	this.selectedDomain('');
 	this.password('');
-	this.quota('');
+	this.quota(Settings.UserDefaultQuotaMB);
 	this.role(Enums.UserRole.NormalUser);
 	this.writeSeparateLog(false);
 };
@@ -70,7 +71,6 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 		this.publicId(oResult.PublicId);
 		this.role(oResult.Role);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
-		this.quota('');
 		this.getUserQuota(iEntityId);
 	}
 	else
