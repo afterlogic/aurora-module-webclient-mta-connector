@@ -55,6 +55,16 @@ CEditMailDomainView.prototype.parse = function (iEntityId, oResult)
 	}
 };
 
+CEditMailDomainView.prototype.isValidSaveData = function ()
+{
+	var bValid = $.trim(this.domain()) !== '';
+	if (!bValid)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAILDOMAIN_NAME_EMPTY'));
+	}
+	return bValid;
+};
+
 CEditMailDomainView.prototype.getParametersForSave = function ()
 {
 	return {
