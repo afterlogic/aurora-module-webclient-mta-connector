@@ -2,6 +2,8 @@
 
 module.exports = function (oAppData) {
 	var
+		_ = require('underscore'),
+		
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 				
 		TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
@@ -65,6 +67,20 @@ module.exports = function (oAppData) {
 					ScreenHash: 'mailinglists',
 					LinkTextKey: '%MODULENAME%/HEADING_MAILINGLISTS_SETTINGS_TABNAME',
 					EditView: require('modules/%ModuleName%/js/views/EditMailingListView.js'),
+					Filters: [
+						{
+							sField: 'DomainId',
+							mList: function () {
+								return _.map(Cache.domains(), function (oDomain) {
+									return {
+										text: oDomain.Name,
+										value: oDomain.Id
+									};
+								});
+							},
+							sAllText: TextUtils.i18n('%MODULENAME%/LABEL_ALL_DOMAINS')
+						}
+					],
 					
 					ServerModuleName: Settings.ServerModuleName,
 					GetListRequest: 'GetMailingLists',
@@ -84,7 +100,21 @@ module.exports = function (oAppData) {
 				}]);
 				ModulesManager.run('AdminPanelWebclient', 'changeAdminPanelEntityData', [{
 					Type: 'User',
-					EditView: require('modules/%ModuleName%/js/views/EditUserView.js')
+					EditView: require('modules/%ModuleName%/js/views/EditUserView.js'),
+					Filters: [
+						{
+							sField: 'DomainId',
+							mList: function () {
+								return _.map(Cache.domains(), function (oDomain) {
+									return {
+										text: oDomain.Name,
+										value: oDomain.Id
+									};
+								});
+							},
+							sAllText: TextUtils.i18n('%MODULENAME%/LABEL_ALL_DOMAINS')
+						}
+					]
 				}]);
 			}
 		};
