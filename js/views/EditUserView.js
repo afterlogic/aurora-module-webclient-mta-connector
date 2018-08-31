@@ -137,6 +137,10 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 	{
 		this.quota(oResponse.Result / this.QuotaKiloMultiplier);
 	}
+	else
+	{
+		this.quota(0);
+	}
 };
 
 module.exports = new CEditUserView();
