@@ -118,6 +118,7 @@ module.exports = function (oAppData) {
 						}
 					]
 				}]);
+				ModulesManager.run('FilesWebclient', 'hidePersonalFilesAdminSection');
 			}
 		};
 	}
