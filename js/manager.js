@@ -69,6 +69,7 @@ module.exports = function (oAppData) {
 					EditView: require('modules/%ModuleName%/js/views/EditMailingListView.js'),
 					Filters: [
 						{
+							sEntity: 'Domain',
 							sField: 'DomainId',
 							mList: function () {
 								return _.map(Cache.domains(), function (oDomain) {
@@ -103,6 +104,7 @@ module.exports = function (oAppData) {
 					EditView: require('modules/%ModuleName%/js/views/EditUserView.js'),
 					Filters: [
 						{
+							sEntity: 'Domain',
 							sField: 'DomainId',
 							mList: function () {
 								return _.map(Cache.domains(), function (oDomain) {

@@ -23,7 +23,13 @@ function CEditUserView()
 	this.id = ko.observable(0);
 	this.publicId = ko.observable('');
 	this.domains = Cache.domains;
-	this.selectedDomain = ko.observableArray('');
+	this.domains.subscribe(function () {
+		if (_.isFunction(this.updateSavedState))
+		{
+			this.updateSavedState();
+		}
+	}, this);
+	this.selectedDomain = ko.observable(null);
 	this.password = ko.observable('');
 	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
 	this.aRoles = [
@@ -56,7 +62,7 @@ CEditUserView.prototype.clearFields = function ()
 {
 	this.id(0);
 	this.publicId('');
-	this.selectedDomain('');
+	this.selectedDomain(null);
 	this.password('');
 	this.quota(Settings.UserDefaultQuotaMB);
 	this.role(Enums.UserRole.NormalUser);
@@ -129,6 +135,16 @@ CEditUserView.prototype.getUserQuota = function (iUserId)
 		this.onGetUserQuotaResponse,
 		this
 	);
+};
+
+CEditUserView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
+{
+	if ((typeof aCurrentEntitiesId.Domain) === 'number')
+	{
+		this.selectedDomain(_.find(this.domains(), function (oDomain) {
+			return oDomain.Id === aCurrentEntitiesId.Domain;
+		}));
+	}
 };
 
 CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)

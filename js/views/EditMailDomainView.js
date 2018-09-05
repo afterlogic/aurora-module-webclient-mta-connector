@@ -1,17 +1,12 @@
 'use strict';
 
 var
-	_ = require('underscore'),
 	ko = require('knockout'),
 	
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
-	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
-	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
-	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
-	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
-	
-	Settings = require('modules/%ModuleName%/js/Settings.js')
+	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
+	Screens = require('%PathToCoreWebclientModule%/js/Screens.js')
 ;
 
 /**
@@ -70,6 +65,11 @@ CEditMailDomainView.prototype.getParametersForSave = function ()
 	return {
 		DomainName: this.domain()
 	};
+};
+
+CEditMailDomainView.prototype.showUsers = function ()
+{
+	ModulesManager.run('AdminPanelWebclient', 'showEntities', ['User', {'Domain': this.id()}]);
 };
 
 module.exports = new CEditMailDomainView();

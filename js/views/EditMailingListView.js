@@ -31,6 +31,16 @@ function CEditMailingListView()
 
 CEditMailingListView.prototype.ViewTemplate = '%ModuleName%_EditMailingListView';
 
+CEditMailingListView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
+{
+	if ((typeof aCurrentEntitiesId.Domain) === 'number')
+	{
+		this.selectedDomain(_.find(this.domains(), function (oDomain) {
+			return oDomain.Id === aCurrentEntitiesId.Domain;
+		}));
+	}
+};
+
 CEditMailingListView.prototype.getCurrentValues = function ()
 {
 	return [
