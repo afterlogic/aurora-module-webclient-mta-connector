@@ -151,7 +151,7 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 {
 	if (oResponse && oResponse.Result)
 	{
-		this.quota(oResponse.Result / this.QuotaKiloMultiplier);
+		this.quota(oResponse.Result / (this.QuotaKiloMultiplier * this.QuotaKiloMultiplier));//Bytes to MB  conversion
 	}
 	else
 	{
