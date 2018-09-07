@@ -104,7 +104,7 @@ CEditUserView.prototype.getParametersForSave = function ()
 		PublicId: $.trim(this.publicId()) + sDomain,
 		DomainId: this.selectedDomain().Id,
 		Password: this.password(),
-		Quota: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
+		QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
 		Role: this.role(),
 		WriteSeparateLog: this.writeSeparateLog()
 	};
