@@ -13,7 +13,7 @@
 <div class="row">
 	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD'}"></span>
 	<span class="value">
-		<input class="input" type="password" data-bind="value: password, valueUpdate: 'afterkeydown', enable: id() === 0, css: {'disabled': id() !== 0}, 
+		<input class="input" type="password" data-bind="value: password, valueUpdate: 'afterkeydown', 
 			onEnter: function () { saveEntity($parents, $root); }" />
 	</span>
 </div>

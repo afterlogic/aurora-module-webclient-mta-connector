@@ -42,6 +42,7 @@ function CEditUserView()
 	this.QuotaKiloMultiplier = 1024;
 	
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this});
+	App.subscribeEvent('ReceiveAjaxResponse::after', this.onAjaxResponse.bind(this));
 }
 
 CEditUserView.prototype.ViewTemplate = '%ModuleName%_EditUserView';
@@ -54,7 +55,8 @@ CEditUserView.prototype.getCurrentValues = function ()
 		this.publicId(),
 		this.selectedDomain(),
 		this.role(),
-		this.writeSeparateLog()
+		this.writeSeparateLog(),
+		this.password()
 	];
 };
 
@@ -78,6 +80,7 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 		this.role(oResult.Role);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
 		this.getUserQuota(iEntityId);
+		this.password('      ');
 	}
 	else
 	{
@@ -87,27 +90,41 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 
 CEditUserView.prototype.isValidSaveData = function ()
 {
-	var bValid = $.trim(this.publicId()) !== '';
-	if (!bValid)
+	var
+		bValidUserName = $.trim(this.publicId()) !== '',
+		bValidPassword = $.trim(this.password()) !== '' || this.password() === '      '
+	;
+	if (!bValidUserName)
 	{
 		Screens.showError(TextUtils.i18n('ADMINPANELWEBCLIENT/ERROR_USER_NAME_EMPTY'));
 	}
-	return bValid;
+	if (!bValidPassword)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_PASSWORD_EMPTY'));
+	}
+	return bValidUserName && bValidPassword;
 };
 
 CEditUserView.prototype.getParametersForSave = function ()
 {
-	var sDomain = this.id() === 0 ?  '@' + this.selectedDomain().Name : '';
+	var
+		sDomain = this.id() === 0 ?  '@' + this.selectedDomain().Name : '',
+		oParametersForSave = {
+			Id: this.id(),
+			PublicId: $.trim(this.publicId()) + sDomain,
+			DomainId: this.selectedDomain().Id,
+			QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
+			Role: this.role(),
+			WriteSeparateLog: this.writeSeparateLog()
+		}
+	;
+	
+	if (this.id() !== 0 && this.password() !== '      ') //6 spaces represent default password view
+	{
+		oParametersForSave.Password = $.trim(this.password());
+	}
 
-	return {
-		Id: this.id(),
-		PublicId: $.trim(this.publicId()) + sDomain,
-		DomainId: this.selectedDomain().Id,
-		Password: this.password(),
-		QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
-		Role: this.role(),
-		WriteSeparateLog: this.writeSeparateLog()
-	};
+	return oParametersForSave;
 };
 
 CEditUserView.prototype.saveEntity = function (aParents, oRoot)
@@ -156,6 +173,18 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 	else
 	{
 		this.quota(0);
+	}
+};
+
+CEditUserView.prototype.onAjaxResponse = function (oParams)
+{
+	if (oParams.Response.Module === 'AdminPanelWebclient' && oParams.Response.Method === "UpdateEntity" &&
+		(!oParams.Response.SubscriptionsResult ||
+		!oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] ||
+		oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] !== true)
+	)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_ON_PASSWORD_UPDATE'));
 	}
 };
 
