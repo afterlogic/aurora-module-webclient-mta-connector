@@ -118,8 +118,8 @@ CEditUserView.prototype.getParametersForSave = function ()
 			WriteSeparateLog: this.writeSeparateLog()
 		}
 	;
-	
-	if (this.id() !== 0 && this.password() !== '      ') //6 spaces represent default password view
+
+	if (this.password() !== '      ') //6 spaces represent default password view
 	{
 		oParametersForSave.Password = $.trim(this.password());
 	}
