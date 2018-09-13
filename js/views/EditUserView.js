@@ -178,13 +178,20 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 
 CEditUserView.prototype.onAjaxResponse = function (oParams)
 {
-	if (oParams.Response.Module === 'AdminPanelWebclient' && oParams.Response.Method === "UpdateEntity" &&
-		(!oParams.Response.SubscriptionsResult ||
-		!oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] ||
-		oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] !== true)
-	)
+	if (oParams.Response.Module === 'AdminPanelWebclient' && oParams.Response.Method === "UpdateEntity")
 	{
-		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_ON_PASSWORD_UPDATE'));
+		if (!oParams.Response.SubscriptionsResult ||
+			!oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] ||
+			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] !== true)
+		{
+			Screens.showReport(TextUtils.i18n('%MODULENAME%/PASSWORD_NOT_UPDATED'));
+		}
+		else if (oParams.Response.SubscriptionsResult &&
+			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] &&
+			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] === true)
+		{
+			Screens.showReport(TextUtils.i18n('%MODULENAME%/PASSWORD_UPDATED'));
+		}
 	}
 };
 
