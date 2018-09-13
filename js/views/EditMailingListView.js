@@ -96,7 +96,7 @@ CEditMailingListView.prototype.addNewMember = function ()
 	
 	Ajax.send(Settings.ServerModuleName, 'AddMailingListMember', {
 		'ListId': this.id(),
-		'ListName': this.memberEmail()
+		'ListTo': this.memberEmail()
 	}, function (oResponse) {
 		if (oResponse.Result)
 		{
