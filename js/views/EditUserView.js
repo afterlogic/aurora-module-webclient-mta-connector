@@ -42,7 +42,6 @@ function CEditUserView()
 	this.QuotaKiloMultiplier = 1024;
 	
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this});
-	App.subscribeEvent('ReceiveAjaxResponse::after', this.onAjaxResponse.bind(this));
 }
 
 CEditUserView.prototype.ViewTemplate = '%ModuleName%_EditUserView';
@@ -176,23 +175,34 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 	}
 };
 
-CEditUserView.prototype.onAjaxResponse = function (oParams)
+CEditUserView.prototype.showReport = function (sMessage, oResponse)
 {
-	if (oParams.Response.Module === 'AdminPanelWebclient' && oParams.Response.Method === "UpdateEntity")
+	var
+		sSubMessage = '',
+		oSubscriptionResult = null
+	;
+
+	if (oResponse.SubscriptionsResult &&
+		oResponse.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"])
 	{
-		if (!oParams.Response.SubscriptionsResult ||
-			!oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] ||
-			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] !== true)
-		{
-			Screens.showReport(TextUtils.i18n('%MODULENAME%/PASSWORD_NOT_UPDATED'));
-		}
-		else if (oParams.Response.SubscriptionsResult &&
-			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] &&
-			oParams.Response.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"] === true)
-		{
-			Screens.showReport(TextUtils.i18n('%MODULENAME%/PASSWORD_UPDATED'));
-		}
+		oSubscriptionResult = oResponse.SubscriptionsResult["MtaConnector::onAfterUpdateEntity"];
 	}
+
+	if (!oSubscriptionResult || !oSubscriptionResult.Result ||
+		(typeof oSubscriptionResult.IsPasswordChanged !== 'undefined'  && oSubscriptionResult.IsPasswordChanged === false))
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_PASSWORD_NOT_UPDATED'));
+	}
+	else if (typeof oSubscriptionResult.IsPasswordChanged !== 'undefined'  && oSubscriptionResult.IsPasswordChanged === true)
+	{
+		sSubMessage = '<br>' + TextUtils.i18n('%MODULENAME%/PASSWORD_UPDATED');
+	}
+	else
+	{
+		sSubMessage = '<br>' + TextUtils.i18n('%MODULENAME%/PASSWORD_NOT_UPDATED');
+	}
+
+	Screens.showReport(sMessage + sSubMessage);
 };
 
 module.exports = new CEditUserView();
