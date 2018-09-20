@@ -4,6 +4,8 @@ var
 	_ = require('underscore'),
 	ko = require('knockout'),
 	
+	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
+	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	
@@ -23,12 +25,7 @@ function CCache()
 
 CCache.prototype.init = function ()
 {
-	Ajax.send(Settings.ServerModuleName, 'GetDomains', {}, function (oResponse) {
-		if (oResponse && oResponse.Result && _.isArray(oResponse.Result.Items))
-		{
-			this.domains(oResponse.Result.Items);
-		}
-	}, this);
+	Ajax.send(Settings.ServerModuleName, 'GetDomains');
 };
 
 CCache.prototype.getDomain = function (iId)
@@ -64,9 +61,13 @@ CCache.prototype.onAjaxSend = function (oParams)
 
 CCache.prototype.onAjaxResponse = function (oParams)
 {
-	if (oParams.Response.Module === Settings.ServerModuleName && oParams.Response.Method === 'GetDomains' && oParams.Response.Result)
+	if (oParams.Response.Module === Settings.ServerModuleName && oParams.Response.Method === 'GetDomains')
 	{
-		this.domains(_.isArray(oParams.Response.Result.Items) ? oParams.Response.Result.Items : []);
+		var aDomains = oParams.Response.Result && _.isArray(oParams.Response.Result.Items) ? oParams.Response.Result.Items : [];
+		_.each(aDomains, function (oDomain) {
+			oDomain.Id = Types.pInt(oDomain.Id);
+		});
+		this.domains(aDomains);
 	}
 };
 
