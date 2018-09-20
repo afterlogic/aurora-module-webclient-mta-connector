@@ -175,7 +175,7 @@ CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
 	}
 };
 
-CEditUserView.prototype.showReport = function (sMessage, oResponse)
+CEditUserView.prototype.showAdvancedReport = function (sMessage, oResponse)
 {
 	var
 		sSubMessage = '',
