@@ -43,10 +43,12 @@ CEditMailingListView.prototype.onRoute = function (aTabParams, aCurrentEntitiesI
 
 CEditMailingListView.prototype.getCurrentValues = function ()
 {
+	// There is a problem with considering this.selectedDomain() in state of changes on this form.
+	// this.domains() changes affect on this.selectedDomain().
+	// this.selectedDomain() changes might be not that important.
 	return [
 		this.id(),
-		this.email(),
-		this.selectedDomain()
+		this.email()
 	];
 };
 

@@ -23,12 +23,6 @@ function CEditUserView()
 	this.id = ko.observable(0);
 	this.publicId = ko.observable('');
 	this.domains = Cache.domains;
-	this.domains.subscribe(function () {
-		if (_.isFunction(this.updateSavedState))
-		{
-			this.updateSavedState();
-		}
-	}, this);
 	this.selectedDomain = ko.observable(null);
 	this.password = ko.observable('');
 	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
@@ -49,10 +43,12 @@ CEditUserView.prototype.ViewConstructorName = 'CEditUserView';
 
 CEditUserView.prototype.getCurrentValues = function ()
 {
+	// There is a problem with considering this.selectedDomain() in state of changes on this form.
+	// this.domains() changes affect on this.selectedDomain().
+	// this.selectedDomain() changes might be not that important.
 	return [
 		this.id(),
 		this.publicId(),
-		this.selectedDomain(),
 		this.role(),
 		this.writeSeparateLog(),
 		this.password()
