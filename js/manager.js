@@ -144,7 +144,14 @@ module.exports = function (oAppData) {
 								oResponse.Method === 'Delete')
 							)
 							{
-								App.broadcastEvent('NeedQuotaRequest');
+								var
+									oAccountList = ModulesManager.run('MailWebclient', 'getAccountList'),
+									oAccount = oAccountList ? oAccountList.getDefault() : null
+								;
+								if (oAccount)
+								{
+									oAccount.updateQuotaParams();
+								}
 							}
 						});
 				}
