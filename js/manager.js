@@ -146,9 +146,9 @@ module.exports = function (oAppData) {
 							{
 								var
 									oAccountList = ModulesManager.run('MailWebclient', 'getAccountList'),
-									oAccount = oAccountList ? oAccountList.getDefault() : null
+									oAccount = oAccountList ? oAccountList.getCurrent() : null
 								;
-								if (oAccount)
+								if (oAccount && oAccount.bDefault)
 								{
 									oAccount.updateQuotaParams();
 								}
