@@ -8,6 +8,7 @@ var
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
+	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
@@ -17,7 +18,18 @@ var
  */
 function CCache()
 {
-	this.domains = ko.observableArray([]);
+	this.selectedTenantId = ModulesManager.run('AdminPanelWebclient', 'getKoSelectedTenantId');
+	this.domainsByTenants = ko.observable({});
+	this.selectedTenantId.subscribe(function () {
+		if (typeof this.domainsByTenants()[this.selectedTenantId()] === 'undefined')
+		{
+			Ajax.send(Settings.ServerModuleName, 'GetDomains');
+		}
+	}, this);
+	this.domains = ko.computed(function () {
+		var aDomains = this.domainsByTenants()[this.selectedTenantId()];
+		return _.isArray(aDomains) ? aDomains : [];
+	}, this);
 	
 	App.subscribeEvent('ReceiveAjaxResponse::after', this.onAjaxResponse.bind(this));
 	App.subscribeEvent('SendAjaxRequest::before', this.onAjaxSend.bind(this));
@@ -63,11 +75,17 @@ CCache.prototype.onAjaxResponse = function (oParams)
 {
 	if (oParams.Response.Module === Settings.ServerModuleName && oParams.Response.Method === 'GetDomains')
 	{
-		var aDomains = oParams.Response.Result && _.isArray(oParams.Response.Result.Items) ? oParams.Response.Result.Items : [];
+		var
+			iTenantId = oParams.Request.Parameters.TenantId,
+			aDomains = oParams.Response.Result && _.isArray(oParams.Response.Result.Items) ? oParams.Response.Result.Items : []
+		;
+		
 		_.each(aDomains, function (oDomain) {
 			oDomain.Id = Types.pInt(oDomain.Id);
 		});
-		this.domains(aDomains);
+		
+		this.domainsByTenants()[iTenantId] = aDomains;
+		this.domainsByTenants.valueHasMutated();
 	}
 };
 
