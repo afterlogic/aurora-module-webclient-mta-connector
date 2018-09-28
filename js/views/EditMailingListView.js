@@ -33,6 +33,10 @@ CEditMailingListView.prototype.ViewTemplate = '%ModuleName%_EditMailingListView'
 
 CEditMailingListView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
 {
+	if (this.domains().length === 0)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
+	}
 	if ((typeof aCurrentEntitiesId.Domain) === 'number')
 	{
 		this.selectedDomain(_.find(this.domains(), function (oDomain) {
@@ -72,12 +76,26 @@ CEditMailingListView.prototype.parse = function (iEntityId, oResult)
 	}
 };
 
+CEditMailingListView.prototype.isValidSaveData = function ()
+{
+	if (this.domains().length === 0)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
+		return false;
+	}
+	return true;
+};
+
 CEditMailingListView.prototype.getParametersForSave = function ()
 {
-	return {
-		Email: this.email() + '@' + this.selectedDomain().Name,
-		DomainId: this.selectedDomain().Id
-	};
+	if (this.selectedDomain())
+	{
+		return {
+			Email: this.email() + '@' + this.selectedDomain().Name,
+			DomainId: this.selectedDomain().Id
+		};
+	}
+	return null;
 };
 
 CEditMailingListView.prototype.setRequestEntityDataFunction = function (fRequestEntityData)

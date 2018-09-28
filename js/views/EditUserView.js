@@ -89,25 +89,32 @@ CEditUserView.prototype.isValidSaveData = function ()
 		bValidUserName = $.trim(this.publicId()) !== '',
 		bValidPassword = $.trim(this.password()) !== '' || this.password() === '      '
 	;
+	if (this.domains().length === 0)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
+		return false;
+	}
 	if (!bValidUserName)
 	{
 		Screens.showError(TextUtils.i18n('ADMINPANELWEBCLIENT/ERROR_USER_NAME_EMPTY'));
+		return false;
 	}
 	if (!bValidPassword)
 	{
 		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_PASSWORD_EMPTY'));
+		return false;
 	}
-	return bValidUserName && bValidPassword;
+	return true;
 };
 
 CEditUserView.prototype.getParametersForSave = function ()
 {
 	var
-		sDomain = this.id() === 0 ?  '@' + this.selectedDomain().Name : '',
+		sDomain = this.id() === 0 && this.selectedDomain() ? '@' + this.selectedDomain().Name : '',
 		oParametersForSave = {
 			Id: this.id(),
 			PublicId: $.trim(this.publicId()) + sDomain,
-			DomainId: this.selectedDomain().Id,
+			DomainId: this.selectedDomain() ? this.selectedDomain().Id : 0,
 			QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
 			Role: this.role(),
 			WriteSeparateLog: this.writeSeparateLog()
@@ -151,6 +158,10 @@ CEditUserView.prototype.getUserQuota = function (iUserId)
 
 CEditUserView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
 {
+	if (this.domains().length === 0)
+	{
+		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
+	}
 	if ((typeof aCurrentEntitiesId.Domain) === 'number')
 	{
 		this.selectedDomain(_.find(this.domains(), function (oDomain) {
