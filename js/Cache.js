@@ -20,14 +20,17 @@ function CCache()
 {
 	this.selectedTenantId = ModulesManager.run('AdminPanelWebclient', 'getKoSelectedTenantId');
 	this.domainsByTenants = ko.observable({});
-	this.selectedTenantId.subscribe(function () {
-		if (typeof this.domainsByTenants()[this.selectedTenantId()] === 'undefined')
-		{
-			Ajax.send(Settings.ServerModuleName, 'GetDomains');
-		}
-	}, this);
+	if (_.isFunction(this.selectedTenantId))
+	{
+		this.selectedTenantId.subscribe(function () {
+			if (typeof this.domainsByTenants()[this.selectedTenantId()] === 'undefined')
+			{
+				Ajax.send(Settings.ServerModuleName, 'GetDomains');
+			}
+		}, this);
+	}
 	this.domains = ko.computed(function () {
-		var aDomains = this.domainsByTenants()[this.selectedTenantId()];
+		var aDomains = _.isFunction(this.selectedTenantId) ? this.domainsByTenants()[this.selectedTenantId()] : [];
 		return _.isArray(aDomains) ? aDomains : [];
 	}, this);
 	
