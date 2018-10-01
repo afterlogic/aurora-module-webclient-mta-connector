@@ -89,9 +89,8 @@ CEditUserView.prototype.isValidSaveData = function ()
 		bValidUserName = $.trim(this.publicId()) !== '',
 		bValidPassword = $.trim(this.password()) !== '' || this.password() === '      '
 	;
-	if (this.domains().length === 0)
+	if (Cache.showErrorIfDomainsEmpty())
 	{
-		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
 		return false;
 	}
 	if (!bValidUserName)
@@ -158,10 +157,7 @@ CEditUserView.prototype.getUserQuota = function (iUserId)
 
 CEditUserView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
 {
-	if (this.domains().length === 0)
-	{
-		Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
-	}
+	Cache.showErrorIfDomainsEmpty();
 	if ((typeof aCurrentEntitiesId.Domain) === 'number')
 	{
 		this.selectedDomain(_.find(this.domains(), function (oDomain) {

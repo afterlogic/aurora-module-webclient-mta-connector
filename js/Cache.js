@@ -4,11 +4,13 @@ var
 	_ = require('underscore'),
 	ko = require('knockout'),
 	
+	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
+	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
@@ -41,6 +43,46 @@ function CCache()
 CCache.prototype.init = function ()
 {
 	Ajax.send(Settings.ServerModuleName, 'GetDomains');
+};
+
+/**
+ * Only Cache object knows if domains are empty or not received yet.
+ * So error will be shown as soon as domains will be received from server if they are empty.
+ * @returns Boolean
+ */
+CCache.prototype.showErrorIfDomainsEmpty = function ()
+{
+	var
+		bDomainsEmptyOrUndefined = true,
+		fShowErrorIfDomainsEmpty = function () {
+			if (this.domains().length === 0)
+			{
+				Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_DOMAIN_FIRST'));
+			}
+			else
+			{
+				bDomainsEmptyOrUndefined = false;
+			}
+		}.bind(this)
+	;
+	
+	if (_.isFunction(this.selectedTenantId))
+	{
+		if (typeof this.domainsByTenants()[this.selectedTenantId()] === 'undefined')
+		{
+			var fSubscription = this.domainsByTenants.subscribe(function () {
+				fShowErrorIfDomainsEmpty();
+				fSubscription.dispose();
+				fSubscription = undefined;
+			});
+		}
+		else
+		{
+			fShowErrorIfDomainsEmpty();
+		}
+	}
+	
+	return bDomainsEmptyOrUndefined;
 };
 
 CCache.prototype.getDomain = function (iId)
