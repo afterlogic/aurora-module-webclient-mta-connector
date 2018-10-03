@@ -13,6 +13,7 @@ var
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	CAbstractSettingsFormView = ModulesManager.run('AdminPanelWebclient', 'getAbstractSettingsFormViewClass'),
 	
+	Cache = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
@@ -26,8 +27,14 @@ function CAliasesPerUserAdminSettingsView()
 	this.iUserId = 0;
 	this.iRequestedUserId = 0;
 	
-	this.aliasName = ko.observable('');
 	this.domain = ko.observable('');
+	this.domains = ko.computed(function () {
+		return _.map(Cache.domains(), function (oDomain) {
+			return oDomain.Name;
+		});
+	}, this);
+	
+	this.aliasName = ko.observable('');
 	this.aliases = ko.observableArray([]);
 	this.selectedAliases = ko.observableArray([]);
 }
