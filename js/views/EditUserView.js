@@ -11,7 +11,8 @@ var
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Cache = require('modules/%ModuleName%/js/Cache.js'),
-	Settings = require('modules/%ModuleName%/js/Settings.js')
+	Settings = require('modules/%ModuleName%/js/Settings.js'),
+	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js')
 ;
 
 /**
@@ -74,7 +75,7 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 		this.publicId(oResult.PublicId);
 		this.role(oResult.Role);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
-		this.getUserQuota(iEntityId);
+		this.quota(Types.pInt(oResult["MtaConnector::TotalQuotaBytes"], 1) / (this.QuotaKiloMultiplier * this.QuotaKiloMultiplier));
 		this.password('      ');
 	}
 	else
@@ -142,19 +143,6 @@ CEditUserView.prototype.saveEntity = function (aParents, oRoot)
 	});
 };
 
-CEditUserView.prototype.getUserQuota = function (iUserId)
-{
-	Ajax.send(
-		'MtaConnector',
-		'GetUserQuota',
-		{
-			'UserId': iUserId
-		},
-		this.onGetUserQuotaResponse,
-		this
-	);
-};
-
 CEditUserView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
 {
 	Cache.showErrorIfDomainsEmpty();
@@ -163,18 +151,6 @@ CEditUserView.prototype.onRoute = function (aTabParams, aCurrentEntitiesId)
 		this.selectedDomain(_.find(this.domains(), function (oDomain) {
 			return oDomain.Id === aCurrentEntitiesId.Domain;
 		}));
-	}
-};
-
-CEditUserView.prototype.onGetUserQuotaResponse = function (oResponse, oRequest)
-{
-	if (oResponse && oResponse.Result)
-	{
-		this.quota(oResponse.Result / (this.QuotaKiloMultiplier * this.QuotaKiloMultiplier));//Bytes to MB  conversion
-	}
-	else
-	{
-		this.quota(0);
 	}
 };
 
