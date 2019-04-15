@@ -9,7 +9,6 @@ var
 	
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
-	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Cache = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js')
@@ -20,7 +19,6 @@ var
  */
 function CEditUserView()
 {
-	this.sHeading = TextUtils.i18n('ADMINPANELWEBCLIENT/HEADING_CREATE_USER');
 	this.id = ko.observable(0);
 	this.publicId = ko.observable('');
 	this.domains = Cache.domains;
@@ -35,6 +33,10 @@ function CEditUserView()
 	this.role = ko.observable(Enums.UserRole.NormalUser);
 	this.writeSeparateLog = ko.observable(false);
 	this.QuotaKiloMultiplier = 1024;
+	
+	this.sHeading = TextUtils.i18n('ADMINPANELWEBCLIENT/HEADING_CREATE_USER');
+	this.sActionCreate = TextUtils.i18n('COREWEBCLIENT/ACTION_CREATE');
+	this.sActionCreateInProgress = TextUtils.i18n('COREWEBCLIENT/ACTION_CREATE_IN_PROGRESS');
 	
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this});
 }

@@ -19,7 +19,6 @@ var
  */
 function CEditMailingListView()
 {
-	this.sHeading = TextUtils.i18n('%MODULENAME%/HEADING_CREATE_MAILINGLIST');
 	this.id = ko.observable(0);
 	this.email = ko.observable('');
 	this.domains = Cache.domains;
@@ -27,6 +26,10 @@ function CEditMailingListView()
 	this.memberEmail = ko.observable('');
 	this.members = ko.observableArray([]);
 	this.selectedMembers = ko.observableArray([]);
+	
+	this.sHeading = TextUtils.i18n('%MODULENAME%/HEADING_CREATE_MAILINGLIST');
+	this.sActionCreate = TextUtils.i18n('COREWEBCLIENT/ACTION_CREATE');
+	this.sActionCreateInProgress = TextUtils.i18n('COREWEBCLIENT/ACTION_CREATE_IN_PROGRESS');
 }
 
 CEditMailingListView.prototype.ViewTemplate = '%ModuleName%_EditMailingListView';
