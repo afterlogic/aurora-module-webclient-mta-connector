@@ -1,7 +1,6 @@
 'use strict';
 
 var
-	ko = require('knockout'),
 	_ = require('underscore'),
 	
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js')
@@ -13,6 +12,8 @@ module.exports = {
 
 	UserDefaultQuotaMB: 0,
 
+	EnableMultiTenant: false,
+	
 	/**
 	 * Initializes settings from AppData object sections.
 	 * 
@@ -20,11 +21,19 @@ module.exports = {
 	 */
 	init: function (oAppData)
 	{
-		var oAppDataSection = oAppData[this.ServerModuleName] || {};
+		var
+			oAppDataSection = oAppData[this.ServerModuleName] || {},
+			oCoreDataSection = oAppData['Core'] || {}
+		;
 		
 		if (!_.isEmpty(oAppDataSection))
 		{
 			this.UserDefaultQuotaMB = Types.pNonNegativeInt(oAppDataSection.UserDefaultQuotaMB, this.UserDefaultQuotaMB);
+		}
+		
+		if (!_.isEmpty(oCoreDataSection))
+		{
+			this.EnableMultiTenant = Types.pBool(oCoreDataSection.EnableMultiTenant, this.EnableMultiTenant);
 		}
 	}
 };

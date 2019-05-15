@@ -8,8 +8,8 @@ var
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
-	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
+	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
 	Cache = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
@@ -26,12 +26,8 @@ function CEditUserView()
 	this.selectedDomain = ko.observable(null);
 	this.password = ko.observable('');
 	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
-	this.aRoles = [
-		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_ADMINISTRATOR'), value: Enums.UserRole.SuperAdmin},
-		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_USER'), value: Enums.UserRole.NormalUser},
-		{text: TextUtils.i18n('ADMINPANELWEBCLIENT/LABEL_GUEST'), value: Enums.UserRole.Customer}
-	];
-	this.role = ko.observable(Enums.UserRole.NormalUser);
+	this.bAllowMakeTenant = Settings.EnableMultiTenant && App.getUserRole() === Enums.UserRole.SuperAdmin;
+	this.tenantAdminSelected = ko.observable(false);
 	this.writeSeparateLog = ko.observable(false);
 	this.QuotaKiloMultiplier = 1024;
 	
@@ -53,7 +49,7 @@ CEditUserView.prototype.getCurrentValues = function ()
 	return [
 		this.id(),
 		this.publicId(),
-		this.role(),
+		this.tenantAdminSelected(),
 		this.writeSeparateLog(),
 		this.password()
 	];
@@ -66,7 +62,7 @@ CEditUserView.prototype.clearFields = function ()
 	this.selectedDomain(null);
 	this.password('');
 	this.quota(Settings.UserDefaultQuotaMB);
-	this.role(Enums.UserRole.NormalUser);
+	this.tenantAdminSelected(false);
 	this.writeSeparateLog(false);
 };
 
@@ -76,7 +72,7 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 	{
 		this.id(iEntityId);
 		this.publicId(oResult.PublicId);
-		this.role(oResult.Role);
+		this.tenantAdminSelected(oResult.Role === Enums.UserRole.TenantAdmin);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
 		this.quota(Types.pInt(oResult["MtaConnector::TotalQuotaBytes"], 1) / (this.QuotaKiloMultiplier * this.QuotaKiloMultiplier));
 		this.password('      ');
@@ -119,7 +115,7 @@ CEditUserView.prototype.getParametersForSave = function ()
 			PublicId: $.trim(this.publicId()) + sDomain,
 			DomainId: this.selectedDomain() ? this.selectedDomain().Id : 0,
 			QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
-			Role: this.role(),
+			Role: this.tenantAdminSelected() ? Enums.UserRole.TenantAdmin : Enums.UserRole.NormalUser,
 			WriteSeparateLog: this.writeSeparateLog()
 		}
 	;
