@@ -8,9 +8,11 @@ var
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
+	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
-	Cache = require('modules/%ModuleName%/js/Cache.js'),
+	Cache = ModulesManager.run('MailDomains', 'getMailDomainsCache'),
+	
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 

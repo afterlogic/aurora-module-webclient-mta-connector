@@ -10,7 +10,6 @@ module.exports = function (oAppData) {
 		
 		ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 
-		Cache = null,
 		Settings = require('modules/%ModuleName%/js/Settings.js')
 	;
 	
@@ -18,8 +17,6 @@ module.exports = function (oAppData) {
 	
 	if (ModulesManager.isModuleAvailable(Settings.ServerModuleName) && ModulesManager.isModuleAvailable('MailDomains'))
 	{
-		Cache = require('modules/%ModuleName%/js/Cache.js');
-		
 		if (App.getUserRole() === Enums.UserRole.SuperAdmin)
 		{
 			return {
