@@ -113,7 +113,7 @@ CEditUserView.prototype.getParametersForSave = function ()
 	var
 		sDomain = this.id() === 0 && this.selectedDomain() ? '@' + this.selectedDomain().Name : '',
 		oParametersForSave = {
-			Id: this.id(),
+			UserId: this.id(),
 			PublicId: $.trim(this.publicId()) + sDomain,
 			DomainId: this.selectedDomain() ? this.selectedDomain().Id : 0,
 			QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
