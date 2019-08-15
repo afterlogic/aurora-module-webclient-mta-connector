@@ -10,6 +10,7 @@ module.exports = function (oAppData) {
 		
 		ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 
+		Cache = ModulesManager.run('MailDomains', 'getMailDomainsCache'),
 		Settings = require('modules/%ModuleName%/js/Settings.js')
 	;
 	
