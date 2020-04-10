@@ -95,7 +95,8 @@ module.exports = function (oAppData) {
 								},
 								sAllText: TextUtils.i18n('%MODULENAME%/LABEL_ALL_DOMAINS')
 							}
-						]
+						],
+						EntitiesCountText: TextUtils.i18n('%MODULENAME%/LABEL_USERS_COUNT')
 					}]);
 					ModulesManager.run('FilesWebclient', 'hidePersonalFilesAdminSection');
 				}
