@@ -27,6 +27,7 @@ function CEditUserView()
 	this.domains = Cache.domains;
 	this.selectedDomain = ko.observable(null);
 	this.password = ko.observable('');
+	this.comment = ko.observable('');
 	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
 	this.bAllowMakeTenant = Settings.EnableMultiTenant && App.getUserRole() === Enums.UserRole.SuperAdmin;
 	this.tenantAdminSelected = ko.observable(false);
@@ -53,7 +54,8 @@ CEditUserView.prototype.getCurrentValues = function ()
 		this.publicId(),
 		this.tenantAdminSelected(),
 		this.writeSeparateLog(),
-		this.password()
+		this.password(),
+		this.comment()
 	];
 };
 
@@ -66,6 +68,7 @@ CEditUserView.prototype.clearFields = function ()
 	this.quota(Settings.UserDefaultQuotaMB);
 	this.tenantAdminSelected(false);
 	this.writeSeparateLog(false);
+	this.comment('');
 };
 
 CEditUserView.prototype.parse = function (iEntityId, oResult)
@@ -78,6 +81,7 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
 		this.quota(Types.pInt(oResult["MtaConnector::TotalQuotaBytes"], 1) / (this.QuotaKiloMultiplier * this.QuotaKiloMultiplier));
 		this.password('      ');
+		this.comment(oResult.Comment);
 	}
 	else
 	{
@@ -118,7 +122,8 @@ CEditUserView.prototype.getParametersForSave = function ()
 			DomainId: this.selectedDomain() ? this.selectedDomain().Id : 0,
 			QuotaBytes: this.quota() * this.QuotaKiloMultiplier * this.QuotaKiloMultiplier,//MB to Bytes conversion
 			Role: this.tenantAdminSelected() ? Enums.UserRole.TenantAdmin : Enums.UserRole.NormalUser,
-			WriteSeparateLog: this.writeSeparateLog()
+			WriteSeparateLog: this.writeSeparateLog(),
+			Comment: this.comment()
 		}
 	;
 

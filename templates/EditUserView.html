@@ -42,4 +42,11 @@
 		<label for="writeSeparateLog" data-bind="i18n: {'key': 'ADMINPANELWEBCLIENT/LABEL_LOGGING_SEPARATE_LOG_FOR_USER'}"></label>
 	</span>
 </div>
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_COMMENT'}"></span>
+	<span class="value">
+		<input class="input" data-bind="value: comment, valueUpdate: 'afterkeydown', 
+			onEnter: function () { saveEntity($parents, $root); }" />
+	</span>
+</div>
 {%INCLUDE-START/Edit-User-After/INCLUDE-END%}
