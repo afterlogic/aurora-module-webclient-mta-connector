@@ -81,21 +81,6 @@ module.exports = function (oAppData) {
 					ModulesManager.run('AdminPanelWebclient', 'changeAdminPanelEntityData', [{
 						Type: 'User',
 						EditView: require('modules/%ModuleName%/js/views/EditUserView.js'),
-						Filters: [
-							{
-								sEntity: 'Domain',
-								sField: 'DomainId',
-								mList: function () {
-									return _.map(Cache.domains(), function (oDomain) {
-										return {
-											text: oDomain.Name,
-											value: oDomain.Id
-										};
-									});
-								},
-								sAllText: TextUtils.i18n('%MODULENAME%/LABEL_ALL_DOMAINS')
-							}
-						],
 						EntitiesCountText: TextUtils.i18n('%MODULENAME%/LABEL_USERS_COUNT')
 					}]);
 					ModulesManager.run('FilesWebclient', 'hidePersonalFilesAdminSection');
