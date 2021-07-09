@@ -3,31 +3,34 @@
               :limits="[10,30]">
     <template v-slot:before>
       <div class="flex column full-height">
-        <q-toolbar class="col-auto">
+        <q-toolbar>
           <q-btn flat color="grey-8" size="lg" :label="countLabel" :disable="checkedIds.length === 0"
-                 @click="askDeleteCheckedDomains">
+                 @click="askDeleteCheckedMailingLists">
             <Trash></Trash>
             <q-tooltip>
               {{ $t('COREWEBCLIENT.ACTION_DELETE') }}
             </q-tooltip>
           </q-btn>
-          <q-btn flat color="grey-8" size="lg" @click="routeCreateDomain">
+          <q-btn flat color="grey-8" size="lg" @click="routeCreateMailingList">
             <Add></Add>
             <q-tooltip>
-              {{ $t('MAILDOMAINS.ACTION_ADD_ENTITY_MAILDOMAIN') }}
+              {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
             </q-tooltip>
           </q-btn>
+          <div class="">
+            <q-select outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
+          </div>
         </q-toolbar>
-        <StandardList class="col-grow" :items="domainItems" :selectedItem="selectedDomainId" :loading="loadingDomains"
+        <StandardList class="col-grow" :items="mailingListsItems" :selectedItem="selectedMailingListId" :loading="loadingMailingLists"
                       :search="search" :page="page" :pagesCount="pagesCount"
                       :noItemsText="'MAILDOMAINS.INFO_NO_ENTITIES_MAILDOMAIN'"
                       :noItemsFoundText="'MAILDOMAINS.INFO_NO_ENTITIES_FOUND_MAILDOMAIN'"
-                      ref="domainList" @route="route" @check="afterCheck"/>
+                      ref="mailingList" @route="route" @check="afterCheck"/>
       </div>
     </template>
     <template v-slot:after>
-      <router-view @no-domain-found="handleNoDomainFound" @domain-created="handleCreateDomain"
-                   @cancel-create="route" @delete-domain="askDeleteDomain" :deletingIds="deletingIds"></router-view>
+      <router-view @mailinglist-created="handleCreateMailingList"
+                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds" :domains="domains" :domain="currentDomain"/>
     </template>
     <ConfirmDialog ref="confirmDialog"/>
   </q-splitter>
@@ -42,13 +45,12 @@ import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
 
 import cache from '../cache'
+import cacheDomains from '../../../MailDomains/vue/cache'
 
 import ConfirmDialog from 'src/components/ConfirmDialog'
 // import Empty from 'src/components/Empty'
 import StandardList from 'src/components/StandardList'
-
-// import EditDomain from '../components/EditDomain'
-
+import EditMailingList from '../components/EditMailingList'
 import Add from 'src/assets/icons/Add'
 import Trash from 'src/assets/icons/Trash'
 
@@ -62,14 +64,19 @@ export default {
   },
   data () {
     return {
+      mailingLists: [],
       domains: [],
-      selectedDomainId: 0,
-      loadingDomains: false,
+      currentDomain: {
+        label: this.$t('MTACONNECTORWEBCLIENT.LABEL_ALL_DOMAINS'),
+        value: -1
+      },
+      selectedMailingListId: 0,
+      loadingMailingLists: false,
       totalCount: 0,
       search: '',
       page: 1,
       limit: 10,
-      domainItems: [],
+      mailingListsItems: [],
       checkedIds: [],
       justCreatedId: 0,
       deletingIds: [],
@@ -92,9 +99,12 @@ export default {
     currentTenantId () {
       this.populate()
     },
+    currentDomain () {
+      this.getMailingLists()
+    },
     $route (to, from) {
-      if (this.$route.path === '/domains/create') {
-        this.selectedDomainId = 0
+      if (this.$route.path === '/mailinglists/create') {
+        this.selectedMailingListId = 0
       } else {
         const search = typesUtils.pString(this.$route?.params?.search)
         const page = typesUtils.pPositiveInt(this.$route?.params?.page)
@@ -104,121 +114,131 @@ export default {
           this.populate()
         }
         const domainId = typesUtils.pNonNegativeInt(this.$route?.params?.id)
-        if (this.selectedDomainId !== domainId) {
-          this.selectedDomainId = domainId
+        if (this.selectedMailingListId !== domainId) {
+          this.selectedMailingListId = domainId
         }
       }
     },
-    domains () {
-      this.domainItems = this.domains.map(domain => {
+    mailingLists () {
+      this.mailingListsItems = this.mailingLists.map(mailingList => {
         return {
-          id: domain.id,
-          title: domain.name,
-          rightText: domain.count,
+          id: mailingList.id,
+          title: mailingList.name,
+          rightText: mailingList.count,
           checked: false,
         }
       })
     },
   },
   mounted () {
-    // this.$router.addRoute('domains', { path: 'id/:id', component: EditDomain })
-    // this.$router.addRoute('domains', { path: 'create', component: EditDomain })
-    // this.$router.addRoute('domains', { path: 'search/:search', component: Empty })
-    // this.$router.addRoute('domains', { path: 'search/:search/id/:id', component: EditDomain })
-    // this.$router.addRoute('domains', { path: 'page/:page', component: Empty })
-    // this.$router.addRoute('domains', { path: 'page/:page/id/:id', component: EditDomain })
-    // this.$router.addRoute('domains', { path: 'search/:search/page/:page', component: Empty })
-    // this.$router.addRoute('domains', { path: 'search/:search/page/:page/id/:id', component: EditDomain })
-    // this.populate()
-    cache.getPagedMailingLists(this.currentTenantId, this.search, this.page, this.limit)
+    this.$router.addRoute('mailinglists', { path: 'id/:id', component: EditMailingList })
+    this.$router.addRoute('mailinglists', { path: 'create', component: EditMailingList })
+    // this.$router.addRoute('mailinglists', { path: 'search/:search', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'search/:search/id/:id', component: EditMailingList })
+    // this.$router.addRoute('mailinglists', { path: 'page/:page', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'page/:page/id/:id', component: EditMailingList })
+    // this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page/id/:id', component: EditMailingList })
+    this.populate()
   },
   methods: {
     populate () {
-      this.loadingDomains = true
-      cache.getPagedDomains(this.currentTenantId, this.search, this.page, this.limit).then(({ domains, totalCount, tenantId, page, search }) => {
+      this.loadingMailingLists = true
+      this.getDomains()
+      this.getMailingLists()
+    },
+    getMailingLists () {
+      cache.getPagedMailingLists(this.currentTenantId, this.search, this.page, this.limit, this.currentDomain.value).then(({ mailingLists, totalCount, tenantId, search, page, limit }) => {
         if (page === this.page && search === this.search) {
-          this.domains = domains
+          this.mailingLists = mailingLists
           this.totalCount = totalCount
-          this.loadingDomains = false
-          if (this.justCreatedId && domains.find(domain => {
-            return domain.id === this.justCreatedId
-          })) {
-            this.route(this.justCreatedId)
-            this.justCreatedId = 0
-          }
+          this.loadingMailingLists = false
+          this.route()
+          this.justCreatedId = 0
         }
       })
     },
-    route (domainId = 0) {
-      const enteredSearch = this.$refs?.domainList?.enteredSearch || ''
+    route (mailingListId = 0) {
+      const enteredSearch = this.$refs?.mailingList?.enteredSearch || ''
       const searchRoute = enteredSearch !== '' ? `/search/${enteredSearch}` : ''
-      let selectedPage = this.$refs?.domainList?.selectedPage || 1
+      let selectedPage = this.$refs?.mailingList?.selectedPage || 1
       if (this.search !== enteredSearch) {
         selectedPage = 1
       }
       const pageRoute = selectedPage > 1 ? `/page/${selectedPage}` : ''
-      const idRoute = domainId > 0 ? `/id/${domainId}` : ''
-      const path = '/domains' + searchRoute + pageRoute + idRoute
+      const idRoute = mailingListId > 0 ? `/id/${mailingListId}` : ''
+      const path = '/mailinglists' + searchRoute + pageRoute + idRoute
       if (path !== this.$route.path) {
         this.$router.push(path)
       }
     },
-    routeCreateDomain () {
-      this.$router.push('/domains/create')
+    getDomains () {
+      cacheDomains.getDomains(this.currentTenantId).then(({ domains }) => {
+        this.domains = domains.map(domain => {
+          return {
+            label: domain.name,
+            value: domain.id
+          }
+        })
+        this.domains.unshift(this.currentDomain)
+      })
     },
-    handleCreateDomain (id) {
+    routeCreateMailingList() {
+      this.$router.push('/mailinglists/create')
+    },
+    handleCreateMailingList (id) {
       this.justCreatedId = id
       this.route()
+      this.populate()
     },
     afterCheck (ids) {
       this.checkedIds = ids
     },
-    handleNoDomainFound () {
-      this.route()
-      this.populate()
+    askDeleteMailingList (id) {
+      this.askDeleteMailingLists([id])
     },
-    askDeleteDomain (id) {
-      this.askDeleteDomains([id])
+    askDeleteCheckedMailingLists () {
+      this.askDeleteMailingLists(this.checkedIds)
     },
-    askDeleteCheckedDomains () {
-      this.askDeleteDomains(this.checkedIds)
-    },
-    askDeleteDomains (ids) {
+    askDeleteMailingLists (ids) {
       if (_.isFunction(this?.$refs?.confirmDialog?.openDialog)) {
-        const domain = ids.length === 1
-          ? this.domains.find(domain => {
+        const mailingList = ids.length === 1
+          ? this.mailingLists.find(domain => {
             return domain.id === ids[0]
           })
           : null
-        const title = domain ? domain.name : ''
+        const title = mailingList ? mailingList.name : ''
         this.$refs.confirmDialog.openDialog({
           title,
-          message: this.$tc('MAILDOMAINS.CONFIRM_DELETE_MAILDOMAIN_PLURAL', ids.length),
-          okHandler: this.deleteDomains.bind(this, ids)
+          message: this.$tc('MTACONNECTORWEBCLIENT.CONFIRM_DELETE_MAILINGLIST_PLURAL', ids.length),
+          okHandler: this.deleteMailingLists.bind(this, ids)
         })
       }
     },
-    deleteDomains (ids) {
+    deleteMailingLists (ids) {
       this.deletingIds = ids
-      this.loadingDomains = true
+      this.loadingMailingLists = true
+      const parameters = {
+        IdList: ids,
+        Type: 'MailingList',
+        TenantId: this.currentTenantId,
+        DeletionConfirmedByAdmin: true
+      }
       webApi.sendRequest({
-        moduleName: 'MailDomains',
-        methodName: 'DeleteDomains',
-        parameters: {
-          IdList: ids,
-          DeletionConfirmedByAdmin: true
-        },
+        moduleName: 'MtaConnector',
+        methodName: 'DeleteMailingLists',
+        parameters
       }).then(result => {
         this.deletingIds = []
-        this.loadingDomains = false
+        this.loadingMailingLists = false
         if (result === true) {
-          notification.showReport(this.$tc('MAILDOMAINS.REPORT_DELETE_ENTITIES_MAILDOMAIN_PLURAL', ids.length))
-          const isSelectedDomainRemoved = ids.indexOf(this.selectedDomainId) !== -1
-          const selectedPage = this.$refs?.domainList?.selectedPage || 1
-          const shouldChangePage = this.domains.length === ids.length && selectedPage > 1
-          if (shouldChangePage && _.isFunction(this.$refs?.domainList?.decreasePage)) {
-            this.$refs.domainList.decreasePage()
-          } else if (isSelectedDomainRemoved) {
+          notification.showReport(this.$tc('MTACONNECTORWEBCLIENT.REPORT_DELETE_ENTITIES_MAILINGLIST_PLURAL', ids.length))
+          const isSelectedMailingListRemoved = ids.indexOf(this.selectedMailingListId) !== -1
+          const selectedPage = this.$refs?.mailingList?.selectedPage || 1
+          const shouldChangePage = this.mailingLists.length === ids.length && selectedPage > 1
+          if (shouldChangePage && _.isFunction(this.$refs?.mailingList?.decreasePage)) {
+            this.$refs.mailingList.decreasePage()
+          } else if (isSelectedMailingListRemoved) {
             this.route()
             this.populate()
           } else {
@@ -229,7 +249,7 @@ export default {
         }
       }, error => {
         this.deletingIds = []
-        this.loadingDomains = false
+        this.loadingMailingLists = false
         notification.showError(errors.getTextFromResponse(error, this.$tc('MAILDOMAINS.ERROR_DELETE_ENTITIES_MAILDOMAIN_PLURAL', ids.length)))
       })
     },

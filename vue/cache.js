@@ -6,7 +6,6 @@ import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
 
 import MailingModel from './classes/Mailing'
-import DomainModel from "../../MailDomains/vue/classes/domain";
 
 const mailingList = {}
 let currentMailingLists = []
@@ -42,20 +41,23 @@ export default {
       })
     })
   },
-  getPagedMailingLists (tenantId, search, page, limit) {
+  getPagedMailingLists (tenantId, search, page, limit, domainId = -1) {
+    const parameters = {
+      TenantId: tenantId,
+      Type: 'MailingList',
+      Search: search,
+      Offset: limit * (page - 1),
+      Limit: limit,
+    }
+    if (domainId !== -1) {
+      parameters.DomainId = domainId
+    }
     return new Promise((resolve, reject) => {
       webApi.sendRequest({
         moduleName: 'MtaConnector',
         methodName: 'GetMailingLists',
-        parameters: {
-          TenantId: tenantId,
-          Type: 'MailingList',
-          Search: search,
-          Offset: limit * (page - 1),
-          Limit: limit,
-        },
+        parameters
       }).then(result => {
-        console.log(result, 'result')
         if (_.isArray(result?.Items)) {
           const mailingLists = _.map(result.Items, function (data) {
             return new MailingModel(data)
