@@ -32,4 +32,7 @@ export default {
       },
     ]
   },
+  getUserMainDataComponent () {
+    return import('./components/EditUserMainData')
+  },
 }
