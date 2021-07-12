@@ -15,7 +15,7 @@
               <span class="text-h6"><b>@</b></span>
             </div>
             <div>
-              <q-select style="width: 150px" outlined dense bg-color="white" v-model="aliasDomain" :options="domainsList"/>
+              <q-select style="width: 150px" outlined dense bg-color="white" v-model="selectedDomain" :options="domainsList"/>
             </div>
             <div class="col-3 q-mt-xs q-ml-md">
               <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :ripple="false" color="primary"
@@ -56,6 +56,7 @@ import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
 
 import types from 'src/utils/types'
+import cache from "../../../MailDomains/vue/cache";
 
 export default {
   name: 'AliasesAdminSettingsPerUser',
@@ -71,12 +72,17 @@ export default {
       saving: false,
       deleting: false,
       aliasName: '',
-      aliasDomain: '',
+      selectedDomain: '',
       selectedAliases: [],
       aliasesList: [],
       domainsList: ['1', '2', '3'],
       user: null
     }
+  },
+  computed: {
+    currentTenantId () {
+      return this.$store.getters['tenants/getCurrentTenantId']
+    },
   },
   methods: {
     parseRoute () {
@@ -89,7 +95,23 @@ export default {
       }
     },
     populate () {
+      this.getDomains()
       this.getSettings()
+    },
+    getDomains () {
+      cache.getDomains(this.currentTenantId).then(({ domains, totalCount, tenantId }) => {
+        if (tenantId === this.currentTenantId) {
+          this.domainsList = domains.map(domain => {
+            return {
+              value: domain.id,
+              label: domain.name
+            }
+          })
+          if (this.domainsList.length > 0) {
+            this.selectedDomain = this.domainsList[0]
+          }
+        }
+      })
     },
     addNewAlias () {
       if (!this.saving) {
@@ -98,7 +120,7 @@ export default {
           const parameters = {
             UserId: this.user?.id,
             AliasName: this.aliasName,
-            AliasDomain: this.aliasDomain,
+            AliasDomain: this.selectedDomain.label,
             TenantId: this.tenantId,
           }
           webApi.sendRequest({
@@ -128,11 +150,13 @@ export default {
         this.deleting = true
         if (this.selectedAliases.length) {
           const parameters = {
-            ReservedNames: this.selectedAliases
+            UserId: this.user?.id,
+            Aliases: this.selectedAliases,
+            TenantId: this.tenantId,
           }
           webApi.sendRequest({
-            moduleName: 'CoreUserGroupsLimits',
-            methodName: 'DeleteReservedNames',
+            moduleName: 'MtaConnector',
+            methodName: 'DeleteAlias',
             parameters,
           }).then(result => {
             this.deleting = false
@@ -151,14 +175,18 @@ export default {
     },
     getSettings () {
       this.loading = true
+      const parameters = {
+        UserId: this.user?.id,
+        TenantId: this.currentTenantId
+      }
       webApi.sendRequest({
-        moduleName: 'CoreUserGroupsLimits',
-        methodName: 'GetReservedNames',
-        Parameters: {},
+        moduleName: 'MtaConnector',
+        methodName: 'GetAliases',
+        parameters
       }).then(result => {
         this.loading = false
-        if (result) {
-          this.reservedList = types.pArray(result)
+        if (types.pArray(result.Aliases)) {
+          this.aliasesList = result.Aliases
         }
       },
       response => {
