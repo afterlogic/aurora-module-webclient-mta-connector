@@ -17,14 +17,12 @@
               {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
             </q-tooltip>
           </q-btn>
-          <div class="">
-            <q-select outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
+          <div>
+            <q-select style="width: 180px" outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
           </div>
         </q-toolbar>
         <StandardList class="col-grow" :items="mailingListsItems" :selectedItem="selectedMailingListId" :loading="loadingMailingLists"
                       :search="search" :page="page" :pagesCount="pagesCount"
-                      :noItemsText="'MAILDOMAINS.INFO_NO_ENTITIES_MAILDOMAIN'"
-                      :noItemsFoundText="'MAILDOMAINS.INFO_NO_ENTITIES_FOUND_MAILDOMAIN'"
                       ref="mailingList" @route="route" @check="afterCheck"/>
       </div>
     </template>
@@ -48,7 +46,6 @@ import cache from '../cache'
 import cacheDomains from '../../../MailDomains/vue/cache'
 
 import ConfirmDialog from 'src/components/ConfirmDialog'
-// import Empty from 'src/components/Empty'
 import StandardList from 'src/components/StandardList'
 import EditMailingList from '../components/EditMailingList'
 import Add from 'src/assets/icons/Add'

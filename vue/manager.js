@@ -1,7 +1,7 @@
 export default {
   moduleName: 'MtaConnectorWebclient',
 
-  requiredModules: [],
+  requiredModules: ['MtaConnector', 'MailDomains'],
 
   getPages () {
     return [
