@@ -75,7 +75,7 @@ export default {
       selectedDomain: '',
       selectedAliases: [],
       aliasesList: [],
-      domainsList: ['1', '2', '3'],
+      domainsList: [],
       user: null
     }
   },
@@ -132,9 +132,8 @@ export default {
             if (result === true) {
               this.aliasName = ''
               this.populate()
-              notification.showReport(this.$t('COREWEBCLIENT.REPORT_SETTINGS_UPDATE_SUCCESS'))
             } else {
-              notification.showError(this.$t('COREWEBCLIENT.ERROR_SAVING_SETTINGS_FAILED'))
+              notification.showError(this.$t('COREWEBCLIENT.ERROR_DATA_TRANSFER_FAILED'))
             }
           }, response => {
             this.saving = false
