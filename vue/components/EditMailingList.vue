@@ -14,7 +14,7 @@
               <q-input outlined dense class="bg-white" v-model="memberEmail"/>
             </div>
             <div class="col-3 q-mt-xs q-ml-md">
-              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :ripple="false" color="primary"
+              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!memberEmail.length" :ripple="false" color="primary"
                      :label="$t('MTACONNECTORWEBCLIENT.ACTION_ADD_NEW_MEMBER')"
                      @click="addNewMember"/>
             </div>
@@ -50,7 +50,7 @@
       <div class="q-pt-md text-right">
         <q-btn v-if="!createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="primary"
                :label="deleting ? $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST') : $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST')" @click="deleteMailingList"/>
-        <q-btn v-if="createMode" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
+        <q-btn v-if="createMode" :disable="!mailingListEmail.length" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
                :label="creating ? $t('COREWEBCLIENT.ACTION_CREATE_IN_PROGRESS') : $t('COREWEBCLIENT.ACTION_CREATE')" @click="createMailingList"/>
         <q-btn v-if="createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="secondary"
                :label="$t('COREWEBCLIENT.ACTION_CANCEL')" @click="cancel"/>
@@ -174,32 +174,28 @@ export default {
     populate () {
       this.getSettings()
     },
-    addNewMember () {
+    addNewMember() {
       if (!this.saving) {
-        if (this.memberEmail.length) {
-          this.saving = true
-          const parameters = {
-            ListId: this.mailingList?.id,
-            ListTo: this.memberEmail,
-            TenantId: this.currentTenantId,
-          }
-          webApi.sendRequest({
-            moduleName: 'MtaConnector',
-            methodName: 'AddMailingListMember',
-            parameters,
-          }).then(result => {
-            this.saving = false
-            if (result === true) {
-              this.memberEmail = ''
-              this.populate()
-            }
-          }, response => {
-            this.saving = false
-            notification.showError(errors.getTextFromResponse(response))
-          })
-        } else {
-          notification.showError(this.$t('COREUSERGROUPSLIMITS.ERROR_EMPTY_RESERVED_NAME'))
+        this.saving = true
+        const parameters = {
+          ListId: this.mailingList?.id,
+          ListTo: this.memberEmail,
+          TenantId: this.currentTenantId,
         }
+        webApi.sendRequest({
+          moduleName: 'MtaConnector',
+          methodName: 'AddMailingListMember',
+          parameters,
+        }).then(result => {
+          this.saving = false
+          if (result === true) {
+            this.memberEmail = ''
+            this.populate()
+          }
+        }, response => {
+          this.saving = false
+          notification.showError(errors.getTextFromResponse(response))
+        })
       }
     },
     deleteMembers () {
@@ -226,7 +222,7 @@ export default {
           })
         } else {
           this.deleting = false
-          notification.showError(this.$t('COREUSERGROUPSLIMITS.ERROR_EMPTY_RESERVED_NAMES'))
+          notification.showError(this.$t('MTACONNECTORWEBCLIENT.ERROR_EMPTY_MEMBERS'))
         }
       }
     },
