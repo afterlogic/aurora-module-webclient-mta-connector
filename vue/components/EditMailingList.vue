@@ -48,7 +48,7 @@
         </q-card-section>
       </q-card>
       <div class="q-pt-md text-right">
-        <q-btn v-if="!createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="primary"
+        <q-btn v-if="!createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="negative"
                :label="deleting ? $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST') : $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST')" @click="deleteMailingList"/>
         <q-btn v-if="createMode" :disable="!mailingListEmail.length" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
                :label="creating ? $t('COREWEBCLIENT.ACTION_CREATE_IN_PROGRESS') : $t('COREWEBCLIENT.ACTION_CREATE')" @click="createMailingList"/>
