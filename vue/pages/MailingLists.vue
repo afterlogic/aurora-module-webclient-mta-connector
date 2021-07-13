@@ -3,23 +3,25 @@
               :limits="[10,30]">
     <template v-slot:before>
       <div class="flex column full-height">
-        <q-toolbar>
-          <q-btn flat color="grey-8" size="lg" no-wrap :disable="checkedIds.length === 0"
-                 @click="askDeleteCheckedMailingLists">
-            <Trash></Trash>
-            <span>{{ countLabel }}</span>
-            <q-tooltip>
-              {{ $t('COREWEBCLIENT.ACTION_DELETE') }}
-            </q-tooltip>
-          </q-btn>
-          <q-btn flat color="grey-8" size="lg" @click="routeCreateMailingList">
-            <Add></Add>
-            <q-tooltip>
-              {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
-            </q-tooltip>
-          </q-btn>
-          <div>
-            <q-select style="width: 180px" outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
+        <q-toolbar class="col-auto q-my-sm">
+          <div class="flex">
+            <q-btn flat color="grey-8" size="mg" no-wrap :disable="checkedIds.length === 0"
+                   @click="askDeleteCheckedMailingLists">
+              <Trash></Trash>
+              <span>{{ countLabel }}</span>
+              <q-tooltip>
+                {{ $t('COREWEBCLIENT.ACTION_DELETE') }}
+              </q-tooltip>
+            </q-btn>
+            <q-btn flat color="grey-8" size="mg" @click="routeCreateMailingList">
+              <Add></Add>
+              <q-tooltip>
+                {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
+              </q-tooltip>
+            </q-btn>
+            <div>
+              <q-select style="width: 180px" outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
+            </div>
           </div>
         </q-toolbar>
         <StandardList class="col-grow" :items="mailingListsItems" :selectedItem="selectedMailingListId" :loading="loadingMailingLists"

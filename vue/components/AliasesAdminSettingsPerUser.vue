@@ -18,7 +18,7 @@
               <q-select style="width: 150px" outlined dense bg-color="white" v-model="selectedDomain" :options="domainsList"/>
             </div>
             <div class="col-3 q-mt-xs q-ml-md">
-              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :ripple="false" color="primary"
+              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!this.aliasName.length" :ripple="false" color="primary"
                      :label="$t('MTACONNECTORWEBCLIENT.ACTION_ADD_NEW_ALIAS')"
                      @click="addNewAlias"/>
             </div>
@@ -115,33 +115,29 @@ export default {
     },
     addNewAlias () {
       if (!this.saving) {
-        if (this.aliasName.length) {
-          this.saving = true
-          const parameters = {
-            UserId: this.user?.id,
-            AliasName: this.aliasName,
-            AliasDomain: this.selectedDomain.label,
-            TenantId: this.tenantId,
-          }
-          webApi.sendRequest({
-            moduleName: 'MtaConnector',
-            methodName: 'AddNewAlias',
-            parameters,
-          }).then(result => {
-            this.saving = false
-            if (result === true) {
-              this.aliasName = ''
-              this.populate()
-            } else {
-              notification.showError(this.$t('COREWEBCLIENT.ERROR_DATA_TRANSFER_FAILED'))
-            }
-          }, response => {
-            this.saving = false
-            notification.showError(errors.getTextFromResponse(response, this.$t('COREWEBCLIENT.ERROR_SAVING_SETTINGS_FAILED')))
-          })
-        } else {
-          notification.showError(this.$t('COREUSERGROUPSLIMITS.ERROR_EMPTY_RESERVED_NAME'))
+        this.saving = true
+        const parameters = {
+          UserId: this.user?.id,
+          AliasName: this.aliasName,
+          AliasDomain: this.selectedDomain.label,
+          TenantId: this.tenantId,
         }
+        webApi.sendRequest({
+          moduleName: 'MtaConnector',
+          methodName: 'AddNewAlias',
+          parameters,
+        }).then(result => {
+          this.saving = false
+          if (result === true) {
+            this.aliasName = ''
+            this.populate()
+          } else {
+            notification.showError(this.$t('COREWEBCLIENT.ERROR_DATA_TRANSFER_FAILED'))
+          }
+        }, response => {
+          this.saving = false
+          notification.showError(errors.getTextFromResponse(response, this.$t('COREWEBCLIENT.ERROR_SAVING_SETTINGS_FAILED')))
+        })
       }
     },
     deleteAliasesList () {
