@@ -49,8 +49,7 @@
 </template>
 
 <script>
-import cache from "../../../MailDomains/vue/cache";
-import _ from "lodash";
+import cache from '../../../MailDomains/vue/cache'
 
 const FAKE_PASS = '     '
 
