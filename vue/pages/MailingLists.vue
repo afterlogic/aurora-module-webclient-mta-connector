@@ -20,7 +20,7 @@
               </q-tooltip>
             </q-btn>
             <div>
-              <q-select style="width: 180px" outlined dense bg-color="white" v-model="currentDomain" :options="domains"/>
+              <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain" :options="domainsList"/>
             </div>
           </div>
         </q-toolbar>
@@ -31,7 +31,7 @@
     </template>
     <template v-slot:after>
       <router-view @mailinglist-created="handleCreateMailingList"
-                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds" :domains="domains" :domain="currentDomain"/>
+                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds" :domains="domainsList" :domain="currentDomain"/>
     </template>
     <ConfirmDialog ref="confirmDialog"/>
   </q-splitter>
@@ -46,7 +46,6 @@ import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
 import Empty from 'src/components/Empty'
 import cache from '../cache'
-import cacheDomains from '../../../MailDomains/vue/cache'
 
 import ConfirmDialog from 'src/components/ConfirmDialog'
 import StandardList from 'src/components/StandardList'
@@ -66,7 +65,7 @@ export default {
   data () {
     return {
       mailingLists: [],
-      domains: [],
+      domainsList: [],
       currentDomain: {
         label: this.$t('MTACONNECTORWEBCLIENT.LABEL_ALL_DOMAINS'),
         value: -1
@@ -85,6 +84,9 @@ export default {
     }
   },
   computed: {
+    domains () {
+      return typesUtils.pArray(this.$store.getters['maildomains/getDomains'])
+    },
     currentTenantId () {
       return this.$store.getters['tenants/getCurrentTenantId']
     },
@@ -97,6 +99,15 @@ export default {
     },
   },
   watch: {
+    domains (domains) {
+      this.domainsList = domains[this.currentTenantId].map(domain => {
+        return {
+          value: domain.Id,
+          label: domain.Name
+        }
+      })
+      this.domainsList.unshift(this.currentDomain)
+    },
     currentTenantId () {
       this.populate()
     },
@@ -145,7 +156,7 @@ export default {
   methods: {
     populate () {
       this.loadingMailingLists = true
-      this.getDomains()
+      this.requestDomains()
       this.getMailingLists()
     },
     getMailingLists () {
@@ -173,15 +184,9 @@ export default {
         this.$router.push(path)
       }
     },
-    getDomains () {
-      cacheDomains.getDomains(this.currentTenantId).then(({ domains }) => {
-        this.domains = domains.map(domain => {
-          return {
-            label: domain.name,
-            value: domain.id
-          }
-        })
-        this.domains.unshift(this.currentDomain)
+    requestDomains () {
+      this.$store.dispatch('maildomains/requestDomains', {
+        tenantId: this.currentTenantId
       })
     },
     routeCreateMailingList() {

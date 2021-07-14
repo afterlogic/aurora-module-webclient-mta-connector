@@ -15,7 +15,7 @@
               <span class="text-h6"><b>@</b></span>
             </div>
             <div>
-              <q-select style="width: 150px" outlined dense bg-color="white" v-model="selectedDomain" :options="domainsList"/>
+              <q-select outlined dense bg-color="white" class="domains-select" v-model="selectedDomain" :options="domainsList"/>
             </div>
             <div class="col-3 q-mt-xs q-ml-md">
               <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!this.aliasName.length" :ripple="false" color="primary"
@@ -25,7 +25,7 @@
           </div>
           <div class="row q-mb-md">
             <div class="col-2"/>
-            <div class="col-4">
+            <div class="col-5">
               <select size="9" class="select" multiple v-model="selectedAliases">
                 <option v-for="alias in aliasesList" :key="alias" :value="alias">{{ alias }}</option>
               </select>
@@ -83,8 +83,27 @@ export default {
     currentTenantId () {
       return this.$store.getters['tenants/getCurrentTenantId']
     },
+    domains () {
+      return types.pArray(this.$store.getters['maildomains/getDomains'])
+    },
+  },
+  watch: {
+    domains () {
+      this.generateDomains()
+    },
   },
   methods: {
+    generateDomains () {
+      this.domainsList = this.domains[this.currentTenantId].map(domain => {
+        return {
+          value: domain.Id,
+          label: domain.Name
+        }
+      })
+      if (this.domainsList.length > 0) {
+        this.selectedDomain = this.domainsList[0]
+      }
+    },
     parseRoute () {
       const userId = types.pPositiveInt(this.$route?.params?.id)
       if (this.user?.id !== userId) {
@@ -95,7 +114,7 @@ export default {
       }
     },
     populate () {
-      this.getDomains()
+      this.generateDomains()
       this.getSettings()
     },
     getDomains () {
