@@ -20,7 +20,7 @@
               </q-tooltip>
             </q-btn>
             <div>
-              <q-select style="width: 180px" outlined dense class="bg-white" v-model="currentDomain" :options="domains"/>
+              <q-select style="width: 180px" outlined dense bg-color="white" v-model="currentDomain" :options="domains"/>
             </div>
           </div>
         </q-toolbar>
