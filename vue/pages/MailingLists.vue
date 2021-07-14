@@ -44,7 +44,7 @@ import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
 import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
-
+import Empty from 'src/components/Empty'
 import cache from '../cache'
 import cacheDomains from '../../../MailDomains/vue/cache'
 
@@ -60,7 +60,8 @@ export default {
     ConfirmDialog,
     StandardList,
     Add,
-    Trash
+    Trash,
+    Empty
   },
   data () {
     return {
@@ -133,11 +134,11 @@ export default {
   mounted () {
     this.$router.addRoute('mailinglists', { path: 'id/:id', component: EditMailingList })
     this.$router.addRoute('mailinglists', { path: 'create', component: EditMailingList })
-    // this.$router.addRoute('mailinglists', { path: 'search/:search', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'search/:search', component: Empty })
     this.$router.addRoute('mailinglists', { path: 'search/:search/id/:id', component: EditMailingList })
-    // this.$router.addRoute('mailinglists', { path: 'page/:page', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'page/:page', component: Empty })
     this.$router.addRoute('mailinglists', { path: 'page/:page/id/:id', component: EditMailingList })
-    // this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page', component: Empty })
+    this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page', component: Empty })
     this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page/id/:id', component: EditMailingList })
     this.populate()
   },
