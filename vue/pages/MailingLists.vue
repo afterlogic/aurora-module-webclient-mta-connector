@@ -59,8 +59,7 @@ export default {
     ConfirmDialog,
     StandardList,
     Add,
-    Trash,
-    Empty
+    Trash
   },
   data () {
     return {

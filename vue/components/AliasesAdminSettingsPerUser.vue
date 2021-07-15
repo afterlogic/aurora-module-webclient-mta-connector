@@ -56,7 +56,7 @@ import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
 
 import types from 'src/utils/types'
-import cache from "../../../MailDomains/vue/cache";
+import cache from '../../../MailDomains/vue/cache'
 
 export default {
   name: 'AliasesAdminSettingsPerUser',
