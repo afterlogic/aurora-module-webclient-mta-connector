@@ -108,13 +108,33 @@ export default {
     save () {
       this.$emit('save')
     },
+    /**
+     * Method is used in the parent component
+     */
     hasChanges () {
       if (this.createMode) {
         return this.publicId !== '' || this.password !== '' || this.quota !== 0
       } else {
-        return this.publicId !== this.user?.publicId  || this.password !== this.savedPass
+        return this.publicId !== this.user?.publicId || this.password !== this.savedPass
       }
     },
+
+    /**
+     * Method is used in the parent component,
+     * do not use async methods - just simple and plain reverting of values
+     * !! hasChanges method must return true after executing revertChanges method
+     */
+    revertChanges () {
+      if (this.createMode) {
+        this.publicId = ''
+        this.password = ''
+        this.quota = 0
+      } else {
+        this.publicId = this.user?.publicId
+        this.password = this.savedPass
+      }
+    },
+
     getSaveParameters () {
       return {
         PublicId: this.createMode ? this.publicId + '@' + this.selectedDomain?.name : this.user?.publicId,
