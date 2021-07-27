@@ -36,12 +36,13 @@
           </div>
         </q-card-section>
         <q-card-section v-else>
-          <div class="row">
-            <div class="col-2 q-mt-sm" v-t="'COREWEBCLIENT.LABEL_EMAIL'"></div>
+          <div class="row items-center">
+            <div class="col-2" v-t="'COREWEBCLIENT.LABEL_EMAIL'"></div>
             <div class="col-3">
               <q-input outlined dense bg-color="white" v-model="mailingListEmail"/>
             </div>
-            <div class="col-3 q-ml-md" style="width: 180px">
+            <div class="q-ml-sm">@</div>
+            <div class="col-3 q-ml-sm" style="width: 180px">
               <q-select outlined dense bg-color="white" v-model="currentDomain" :options="currentDomains"/>
             </div>
           </div>
