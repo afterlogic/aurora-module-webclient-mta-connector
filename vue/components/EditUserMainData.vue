@@ -24,12 +24,13 @@
                  @keyup.enter="save"/>
       </div>
     </div>
-    <div class="row q-mb-md" v-if="createMode">
-      <div class="col-2 q-my-sm" v-t="'COREWEBCLIENT.LABEL_EMAIL'"></div>
+    <div class="row q-mb-md items-center" v-if="createMode">
+      <div class="col-2" v-t="'COREWEBCLIENT.LABEL_EMAIL'"></div>
       <div class="col-3">
         <q-input outlined dense bg-color="white" v-model="publicId" :disable="!createMode"
                  @keyup.enter="save"/>
       </div>
+      <div class="q-ml-sm">@</div>
       <div class="col-3 q-ml-sm">
         <q-select outlined dense bg-color="white" v-model="selectedDomain"
                   emit-value map-options :options="domains" option-label="name"/>

@@ -42,7 +42,7 @@
               <q-input outlined dense bg-color="white" v-model="mailingListEmail"/>
             </div>
             <div class="q-ml-sm">@</div>
-            <div class="col-3 q-ml-sm" style="width: 180px">
+            <div class="col-3 q-ml-sm">
               <q-select outlined dense bg-color="white" v-model="currentDomain" :options="currentDomains"/>
             </div>
           </div>
