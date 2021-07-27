@@ -20,7 +20,7 @@
     <div class="row q-mb-md" v-if="!createMode">
       <div class="col-2 q-my-sm" v-t="'MTACONNECTORWEBCLIENT.LABEL_QUOTA'"></div>
       <div class="col-5">
-        <q-input outlined dense bg-color="white" v-model="quota"
+        <q-input outlined dense bg-color="white" v-model="quotaMb"
                  @keyup.enter="save"/>
       </div>
     </div>
@@ -48,24 +48,28 @@
     <div class="row q-mb-md" v-if="createMode">
       <div class="col-2 q-my-sm" v-t="'MTACONNECTORWEBCLIENT.LABEL_QUOTA'"></div>
       <div class="col-3">
-        <q-input outlined dense bg-color="white" v-model="quota" @keyup.enter="save"/>
+        <q-input outlined dense bg-color="white" v-model="quotaMb" @keyup.enter="save"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import typesUtils from 'src/utils/types'
+
 import cache from '../../../MailDomains/vue/cache'
 
 const FAKE_PASS = '     '
 
 export default {
-  name: 'EditUserMainData1',
+  name: 'EditUserMtaConnectorMainData',
+
   props: {
     user: Object,
     createMode: Boolean,
     currentTenantId: Number,
   },
+
   data() {
     return {
       publicId: '',
@@ -73,33 +77,42 @@ export default {
       savedPass: FAKE_PASS,
       domains: [],
       selectedDomain: null,
-      quota: 0,
+      quotaMb: '',
       mail: ''
     }
   },
+
   mounted () {
     this.populate()
   },
+
   watch: {
     $route() {
       this.populate()
     },
+
     user () {
       this.publicId = this.user?.publicId
-      this.quota = this.user?.quotaBytes
+      this.fillUpQuotaFromUser()
     }
   },
+
   methods: {
+    fillUpQuotaFromUser () {
+      this.quotaMb = this.user?.quotaBytes > 0 ? Math.ceil(this.user?.quotaBytes / (1024 * 1024)) : ''
+    },
+
     populate () {
       if (!this.createMode) {
         this.password = FAKE_PASS
-        this.savedPas = FAKE_PASS
+        this.savedPass = FAKE_PASS
         this.publicId = this.user?.publicId
-        this.quota = this.user?.quotaBytes
+        this.fillUpQuotaFromUser()
       } else {
         this.publicId = ''
         this.password = ''
-        this.savedPas = ''
+        this.savedPass = ''
+        this.quotaMb = ''
         this.domains = []
         cache.getDomains(this.currentTenantId).then(({ domains, totalCount, tenantId }) => {
           if (tenantId === this.currentTenantId) {
@@ -114,14 +127,23 @@ export default {
     save () {
       this.$emit('save')
     },
+
     /**
      * Method is used in the parent component
      */
     hasChanges () {
       if (this.createMode) {
-        return this.publicId !== '' || this.password !== '' || this.quota !== 0
+        const bEmpty = this.publicId === '' && this.quotaMb === ''
+        if (bEmpty) {
+          return false
+        } else {
+          const bSamePublicId = this.user?.publicId === this.publicId + '@' + this.selectedDomain?.name
+          const bSameQuota = this.user?.quotaBytes === typesUtils.pInt(this.quotaMb) * 1024 * 1024
+          return !bSamePublicId || !bSameQuota
+        }
       } else {
-        return this.publicId !== this.user?.publicId || this.password !== this.savedPass
+        const bSameQuota = this.user?.quotaBytes === typesUtils.pInt(this.quotaMb) * 1024 * 1024
+        return !bSameQuota
       }
     },
 
@@ -133,11 +155,9 @@ export default {
     revertChanges () {
       if (this.createMode) {
         this.publicId = ''
-        this.password = ''
-        this.quota = 0
+        this.quotaMb = ''
       } else {
-        this.publicId = this.user?.publicId
-        this.password = this.savedPass
+        this.fillUpQuotaFromUser()
       }
     },
 
@@ -145,7 +165,7 @@ export default {
       return {
         PublicId: this.createMode ? this.publicId + '@' + this.selectedDomain?.name : this.user?.publicId,
         DomainId: this.selectedDomain?.id,
-        QuotaBytes: this.quota * 1024 * 1024,
+        QuotaBytes: typesUtils.pInt(this.quotaMb) * 1024 * 1024,
         Password: this.password
       }
     },
