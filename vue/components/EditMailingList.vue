@@ -60,13 +60,10 @@
     <q-inner-loading style="justify-content: flex-start;" :showing="loading || saving || deleting">
       <q-linear-progress query />
     </q-inner-loading>
-    <UnsavedChangesDialog ref="unsavedChangesDialog"/>
   </q-scroll-area>
 </template>
 
 <script>
-import UnsavedChangesDialog from 'src/components/UnsavedChangesDialog'
-
 import webApi from 'src/utils/web-api'
 import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
@@ -76,9 +73,7 @@ import MailingListModel from '../../../MtaConnectorWebclient/vue/classes/Mailing
 
 export default {
   name: 'EditMailingList',
-  components: {
-    UnsavedChangesDialog
-  },
+
   props: {
     domains: Array,
     domain: Object
