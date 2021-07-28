@@ -6,18 +6,16 @@
       </div>
       <q-card flat bordered class="card-edit-settings">
         <q-card-section>
-          <div class="row q-mb-md">
-            <div class="col-2 q-mt-sm" v-t="'MTACONNECTORWEBCLIENT.LABEL_ALIAS'"></div>
+          <div class="row items-center q-mb-md">
+            <div class="col-2" v-t="'MTACONNECTORWEBCLIENT.LABEL_ALIAS'"></div>
             <div class="col-3">
               <q-input outlined dense bg-color="white" v-model="aliasName"/>
             </div>
-            <div class="q-ml-sm q-mr-xs">
-              <span class="text-h6"><b>@</b></span>
-            </div>
-            <div>
+            <div class="q-ml-sm">@</div>
+            <div class="q-ml-sm">
               <q-select outlined dense bg-color="white" class="domains-select" v-model="selectedDomain" :options="domainsList"/>
             </div>
-            <div class="col-3 q-mt-xs q-ml-md">
+            <div class="col-3 q-ml-md">
               <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!this.aliasName.length" :ripple="false" color="primary"
                      :label="$t('MTACONNECTORWEBCLIENT.ACTION_ADD_NEW_ALIAS')"
                      @click="addNewAlias"/>
