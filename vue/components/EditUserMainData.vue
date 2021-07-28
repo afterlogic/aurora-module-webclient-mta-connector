@@ -58,8 +58,6 @@
 <script>
 import typesUtils from 'src/utils/types'
 
-import cache from '../../../MailDomains/vue/cache'
-
 const FAKE_PASS = '     '
 
 export default {
@@ -68,7 +66,6 @@ export default {
   props: {
     user: Object,
     createMode: Boolean,
-    currentTenantId: Number,
   },
 
   data() {
@@ -76,15 +73,21 @@ export default {
       publicId: '',
       password: FAKE_PASS,
       savedPass: FAKE_PASS,
-      domains: [],
       selectedDomain: null,
       quotaMb: '',
       mail: ''
     }
   },
 
-  mounted () {
-    this.populate()
+  computed: {
+    currentTenantId () {
+      return this.$store.getters['tenants/getCurrentTenantId']
+    },
+
+    domains () {
+      const allDomainLists = this.$store.getters['maildomains/getDomains']
+      return typesUtils.pArray(allDomainLists[this.currentTenantId])
+    }
   },
 
   watch: {
@@ -95,10 +98,25 @@ export default {
     user () {
       this.publicId = this.user?.publicId
       this.fillUpQuotaFromUser()
-    }
+    },
+
+    currentTenantId () {
+      this.requestDomains()
+    },
+  },
+
+  mounted () {
+    this.requestDomains()
+    this.populate()
   },
 
   methods: {
+    requestDomains () {
+      this.$store.dispatch('maildomains/requestDomainsIfNecessary', {
+        tenantId: this.currentTenantId
+      })
+    },
+
     fillUpQuotaFromUser () {
       this.quotaMb = this.user?.quotaBytes > 0 ? Math.ceil(this.user?.quotaBytes / (1024 * 1024)) : ''
     },
@@ -114,17 +132,12 @@ export default {
         this.password = ''
         this.savedPass = ''
         this.quotaMb = ''
-        this.domains = []
-        cache.getDomains(this.currentTenantId).then(({ domains, totalCount, tenantId }) => {
-          if (tenantId === this.currentTenantId) {
-            this.domains = domains
-            if (this.domains.length > 0) {
-              this.selectedDomain = this.domains[0]
-            }
-          }
-        })
+        if (this.selectedDomain === null && this.domains.length > 0) {
+          this.selectedDomain = this.domains[0]
+        }
       }
     },
+
     save () {
       this.$emit('save')
     },
