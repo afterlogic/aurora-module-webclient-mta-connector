@@ -20,7 +20,8 @@
               </q-tooltip>
             </q-btn>
             <div>
-              <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain" :options="domainsList"/>
+              <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain"
+                        :options="domainOptions"/>
             </div>
           </div>
         </q-toolbar>
@@ -31,7 +32,8 @@
     </template>
     <template v-slot:after>
       <router-view @mailinglist-created="handleCreateMailingList"
-                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds" :domains="domainsList" :domain="currentDomain"/>
+                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds"
+                   :domains="domainOptions" :domain="currentDomain"/>
     </template>
     <ConfirmDialog ref="confirmDialog"/>
   </q-splitter>
@@ -64,7 +66,7 @@ export default {
   data () {
     return {
       mailingLists: [],
-      domainsList: [],
+      domainOptions: [],
       currentDomain: {
         label: this.$t('MTACONNECTORWEBCLIENT.LABEL_ALL_DOMAINS'),
         value: -1
@@ -83,12 +85,15 @@ export default {
     }
   },
   computed: {
-    domains () {
-      return typesUtils.pArray(this.$store.getters['maildomains/getDomains'])
-    },
     currentTenantId () {
       return this.$store.getters['tenants/getCurrentTenantId']
     },
+
+    domains () {
+      const allDomainLists = this.$store.getters['maildomains/getDomains']
+      return typesUtils.pArray(allDomainLists[this.currentTenantId])
+    },
+
     pagesCount () {
       return Math.ceil(this.totalCount / this.limit)
     },
@@ -99,13 +104,13 @@ export default {
   },
   watch: {
     domains (domains) {
-      this.domainsList = domains[this.currentTenantId].map(domain => {
+      this.domainOptions = domains.map(domain => {
         return {
-          value: domain.Id,
-          label: domain.Name
+          value: domain.id,
+          label: domain.name
         }
       })
-      this.domainsList.unshift(this.currentDomain)
+      this.domainOptions.unshift(this.currentDomain)
     },
     currentTenantId () {
       this.populate()
