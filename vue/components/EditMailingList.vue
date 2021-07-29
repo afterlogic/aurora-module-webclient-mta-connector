@@ -51,8 +51,8 @@
       <div class="q-pt-md text-right">
         <q-btn v-if="!createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="negative"
                :label="deleting ? $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST') : $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST')" @click="deleteMailingList"/>
-        <q-btn v-if="createMode" :disable="!isMailingListEmailValid || !currentDomain" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
-               :label="creating ? $t('COREWEBCLIENT.ACTION_CREATE_IN_PROGRESS') : $t('COREWEBCLIENT.ACTION_CREATE')" @click="createMailingList"/>
+        <q-btn v-if="createMode" :disable="!mailingListEmail.length || !currentDomain" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
+               :label="creating ? $t('COREWEBCLIENT.ACTION_CREATE_IN_PROGRESS') : $t('COREWEBCLIENT.ACTION_CREATE')" @click="handleCreateMailingList"/>
         <q-btn v-if="createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="secondary"
                :label="$t('COREWEBCLIENT.ACTION_CANCEL')" @click="cancel"/>
       </div>
@@ -103,10 +103,6 @@ export default {
     },
     createMode () {
       return this.mailingList?.id === 0
-    },
-    isMailingListEmailValid () {
-      const emailRegex = /^([0-9A-Za-z]{1}[-0-9A-z\.]{1,}[0-9A-Za-z]{1})$/;
-      return emailRegex.test(this.mailingListEmail);
     }
   },
   watch: {
@@ -115,6 +111,15 @@ export default {
     }
   },
   methods: {
+    isMailingListEmailValid () {
+      const emailRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/;
+      return emailRegex.test(this.mailingListEmail);
+    },
+    handleCreateMailingList () {
+      this.isMailingListEmailValid ()
+          ? this.createMailingList ()
+          : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
+    },
     createMailingList () {
       if (!this.creating) {
         this.creating = true
@@ -153,9 +158,13 @@ export default {
         this.currentDomains = this.domains.filter(domain => {
           return domain.value !== -1
         })
-        this.currentDomain = this.currentDomains.find(domain => {
-          return domain.value === this.domain.value
-        })
+        if (this.domain.value !== -1) {
+          this.currentDomain = this.currentDomains.find(domain => {
+            return domain.value === this.domain.value
+          })
+        } else {
+          this.currentDomain = this.currentDomains[0]
+        }
         const mailingList = new MailingListModel({ TenantId: this.currentTenantId })
         this.fillUp(mailingList)
       } else {
