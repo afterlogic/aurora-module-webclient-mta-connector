@@ -17,9 +17,9 @@
                         :options="domains" option-label="name"/>
             </div>
             <div class="col-3 q-ml-md">
-              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!this.aliasName.length" :ripple="false" color="primary"
+              <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!aliasName.length || !selectedDomain" :ripple="false" color="primary"
                      :label="$t('MTACONNECTORWEBCLIENT.ACTION_ADD_NEW_ALIAS')"
-                     @click="addNewAlias"/>
+                     @click="handleAddNewAlias"/>
             </div>
           </div>
           <div class="row q-mb-md">
@@ -119,6 +119,17 @@ export default {
 
     populate () {
       this.getSettings()
+    },
+
+    isAliasNameValid () {
+      const emailNamePartRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/;
+      return emailNamePartRegex.test(this.aliasName);
+    },
+
+    handleAddNewAlias () {
+      this.isAliasNameValid ()
+          ? this.addNewAlias ()
+          : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
     },
 
     addNewAlias () {
