@@ -115,6 +115,10 @@ export default {
     this.doBeforeRouteLeave(to, from, next)
   },
 
+  beforeRouteUpdate (to, from, next) {
+    this.doBeforeRouteLeave(to, from, next)
+  },
+
   mounted () {
     this.parseRoute()
   },
@@ -170,6 +174,7 @@ export default {
         }).then(result => {
           this.creating = false
           if (result === true) {
+            this.mailingListEmail = ''
             notification.showReport(this.$t('MTACONNECTORWEBCLIENT.REPORT_CREATE_ENTITY_MAILINGLIST'))
             this.$emit('mailinglist-created', 0)
             this.parseRoute()
