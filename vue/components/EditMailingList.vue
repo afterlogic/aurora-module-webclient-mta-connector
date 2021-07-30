@@ -64,11 +64,11 @@
 </template>
 
 <script>
-import webApi from 'src/utils/web-api'
 import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
-
 import types from 'src/utils/types'
+import webApi from 'src/utils/web-api'
+
 import MailingListModel from '../../../MtaConnectorWebclient/vue/classes/Mailing'
 
 export default {
@@ -78,9 +78,7 @@ export default {
     domains: Array,
     domain: Object
   },
-  mounted () {
-    this.parseRoute()
-  },
+
   data () {
     return {
       loading: false,
@@ -97,6 +95,7 @@ export default {
       mailingList: null
     }
   },
+
   computed: {
     currentTenantId () {
       return this.$store.getters['tenants/getCurrentTenantId']
@@ -105,21 +104,57 @@ export default {
       return this.mailingList?.id === 0
     }
   },
+
   watch: {
     $route () {
       this.parseRoute()
     }
   },
+
+  beforeRouteLeave (to, from, next) {
+    this.doBeforeRouteLeave(to, from, next)
+  },
+
+  mounted () {
+    this.parseRoute()
+  },
+
   methods: {
+    /**
+     * Method is used in doBeforeRouteLeave mixin
+     */
+    hasChanges () {
+      if (this.createMode) {
+        return this.mailingListEmail !== ''
+      } else {
+        return this.memberEmail !== ''
+      }
+    },
+
+    /**
+     * Method is used in doBeforeRouteLeave mixin,
+     * do not use async methods - just simple and plain reverting of values
+     * !! hasChanges method must return true after executing revertChanges method
+     */
+    revertChanges () {
+      if (this.createMode) {
+        this.mailingListEmail = ''
+      } else {
+        this.memberEmail = ''
+      }
+    },
+
     isMailingListEmailValid () {
-      const emailRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/;
-      return emailRegex.test(this.mailingListEmail);
+      const emailRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/
+      return emailRegex.test(this.mailingListEmail)
     },
+
     handleCreateMailingList () {
-      this.isMailingListEmailValid ()
-          ? this.createMailingList ()
-          : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
+      this.isMailingListEmailValid()
+        ? this.createMailingList()
+        : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
     },
+
     createMailingList () {
       if (!this.creating) {
         this.creating = true

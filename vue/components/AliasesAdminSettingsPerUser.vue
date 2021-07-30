@@ -92,6 +92,10 @@ export default {
     },
   },
 
+  beforeRouteLeave (to, from, next) {
+    this.doBeforeRouteLeave(to, from, next)
+  },
+
   mounted () {
     this.requestDomains()
     this.parseRoute()
@@ -101,6 +105,22 @@ export default {
   },
 
   methods: {
+    /**
+     * Method is used in doBeforeRouteLeave mixin
+     */
+    hasChanges () {
+      return this.aliasName !== ''
+    },
+
+    /**
+     * Method is used in doBeforeRouteLeave mixin,
+     * do not use async methods - just simple and plain reverting of values
+     * !! hasChanges method must return true after executing revertChanges method
+     */
+    revertChanges () {
+      this.aliasName = ''
+    },
+
     requestDomains () {
       this.$store.dispatch('maildomains/requestDomainsIfNecessary', {
         tenantId: this.currentTenantId
