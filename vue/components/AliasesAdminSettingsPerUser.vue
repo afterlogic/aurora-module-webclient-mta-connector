@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 import webApi from 'src/utils/web-api'
 import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
@@ -142,14 +144,14 @@ export default {
     },
 
     isAliasNameValid () {
-      const emailNamePartRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/;
-      return emailNamePartRegex.test(this.aliasName);
+      const emailNamePartRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/
+      return emailNamePartRegex.test(this.aliasName)
     },
 
     handleAddNewAlias () {
-      this.isAliasNameValid ()
-          ? this.addNewAlias ()
-          : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
+      this.isAliasNameValid()
+        ? this.addNewAlias()
+        : notification.showError(this.$t('ADMINPANELWEBCLIENT.ERROR_INVALID_EMAIL_USERNAME_PART'))
     },
 
     addNewAlias () {
@@ -159,7 +161,7 @@ export default {
           UserId: this.user?.id,
           AliasName: this.aliasName,
           AliasDomain: this.selectedDomain?.name,
-          TenantId: this.tenantId,
+          TenantId: this.currentTenantId,
         }
         webApi.sendRequest({
           moduleName: 'MtaConnector',
@@ -219,7 +221,7 @@ export default {
         parameters
       }).then(result => {
         this.loading = false
-        if (typesUtils.pArray(result.Aliases)) {
+        if (_.isArray(result.Aliases)) {
           this.aliasesList = result.Aliases
         }
       },
