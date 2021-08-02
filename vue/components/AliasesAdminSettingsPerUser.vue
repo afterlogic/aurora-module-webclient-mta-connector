@@ -144,8 +144,8 @@ export default {
     },
 
     isAliasNameValid () {
-      const emailNamePartRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/
-      return emailNamePartRegex.test(this.aliasName)
+      const invalidCharactersRegex = /[@\s]/
+      return !invalidCharactersRegex.test(this.aliasName) && this.aliasName.length
     },
 
     handleAddNewAlias () {

@@ -149,8 +149,8 @@ export default {
     },
 
     isMailingListEmailValid () {
-      const emailRegex = /^([0-9A-Za-z]{1}[-_0-9A-z\.]{1,}[0-9A-Za-z]{1})$/
-      return emailRegex.test(this.mailingListEmail)
+      const invalidCharactersRegex = /[@\s]/
+      return !invalidCharactersRegex.test(this.mailingListEmail) && this.mailingListEmail.length
     },
 
     handleCreateMailingList () {
