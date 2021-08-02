@@ -100,6 +100,14 @@ export default {
       this.fillUpQuotaFromUser()
     },
 
+    publicId () {
+      this.changeStatusRequiredFields ()
+    },
+
+    password () {
+      this.changeStatusRequiredFields ()
+    },
+
     currentTenantId () {
       this.requestDomains()
     },
@@ -140,6 +148,12 @@ export default {
 
     save () {
       this.$emit('save')
+    },
+
+    changeStatusRequiredFields () {
+      this.publicId.length && this.password.length
+          ? this.$emit('changeStatusRequiredFields', true)
+          : this.$emit('changeStatusRequiredFields', false)
     },
 
     /**
