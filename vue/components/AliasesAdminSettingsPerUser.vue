@@ -13,7 +13,7 @@
             </div>
             <div class="q-ml-sm">@</div>
             <div class="q-ml-sm">
-              <q-select outlined dense bg-color="white" class="domains-select" v-model="selectedDomain"
+              <q-select outlined dense bg-color="white" v-model="selectedDomain"
                         :options="domains" option-label="name"/>
             </div>
             <div class="col-3 q-ml-md">
