@@ -81,7 +81,7 @@ export default {
       checkedIds: [],
       justCreatedId: 0,
       deletingIds: [],
-      listSplitterWidth: 20,
+      listSplitterWidth: localStorage.getItem('mailing-lists-list-splitter-width') || 20,
     }
   },
   computed: {
@@ -145,6 +145,9 @@ export default {
         }
       })
     },
+    listSplitterWidth () {
+      localStorage.setItem('mailing-lists-list-splitter-width', this.listSplitterWidth)
+    }
   },
   mounted () {
     this.$router.addRoute('mailinglists', { path: 'id/:id', component: EditMailingList })
