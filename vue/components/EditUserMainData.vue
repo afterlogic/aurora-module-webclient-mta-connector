@@ -61,7 +61,7 @@ import typesUtils from 'src/utils/types'
 const FAKE_PASS = '     '
 
 export default {
-  name: 'EditUserMtaConnectorMainData',
+  name: 'EditMtaConnectorUserMainData',
 
   props: {
     user: Object,
@@ -96,16 +96,16 @@ export default {
     },
 
     user () {
-      this.publicId = this.user?.publicId
+      this.publicId = typesUtils.pString(this.user?.publicId)
       this.fillUpQuotaFromUser()
     },
 
     publicId () {
-      this.changeStatusRequiredFields ()
+      this.changeStatusRequiredFields()
     },
 
     password () {
-      this.changeStatusRequiredFields ()
+      this.changeStatusRequiredFields()
     },
 
     currentTenantId () {
@@ -133,7 +133,7 @@ export default {
       if (!this.createMode) {
         this.password = FAKE_PASS
         this.savedPass = FAKE_PASS
-        this.publicId = this.user?.publicId
+        this.publicId = typesUtils.pString(this.user?.publicId)
         this.fillUpQuotaFromUser()
       } else {
         this.publicId = ''
@@ -152,8 +152,8 @@ export default {
 
     changeStatusRequiredFields () {
       this.publicId.length && this.password.length
-          ? this.$emit('changeStatusRequiredFields', true)
-          : this.$emit('changeStatusRequiredFields', false)
+        ? this.$emit('changeStatusRequiredFields', true)
+        : this.$emit('changeStatusRequiredFields', false)
     },
 
     /**
