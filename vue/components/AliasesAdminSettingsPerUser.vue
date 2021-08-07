@@ -12,8 +12,8 @@
               <q-input outlined dense bg-color="white" v-model="aliasName"/>
             </div>
             <div class="q-ml-sm">@</div>
-            <div class="q-ml-sm">
-              <q-select outlined dense bg-color="white" v-model="selectedDomain"
+            <div class="col-3 q-ml-sm">
+              <q-select class="ellipsis" outlined dense bg-color="white" v-model="selectedDomain"
                         :options="domains" option-label="name"/>
             </div>
             <div class="col-3 q-ml-md">
