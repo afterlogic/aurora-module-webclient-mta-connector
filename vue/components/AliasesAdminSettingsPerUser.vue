@@ -13,8 +13,12 @@
             </div>
             <div class="q-ml-sm">@</div>
             <div class="col-3 q-ml-sm">
-              <q-select class="ellipsis" outlined dense bg-color="white" v-model="selectedDomain"
-                        :options="domains" option-label="name"/>
+              <q-select outlined dense bg-color="white" v-model="selectedDomain"
+                        :options="domains" option-label="name">
+                <template v-slot:selected>
+                  <div class="ellipsis">{{ selectedDomain.name }}</div>
+                </template>
+              </q-select>
             </div>
             <div class="col-3 q-ml-md">
               <q-btn unelevated no-caps no-wrap dense class="q-ml-md q-px-sm" :disable="!aliasName.length || !selectedDomain" :ripple="false" color="primary"
