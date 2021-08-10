@@ -21,7 +21,11 @@
             </q-btn>
             <div>
               <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain"
-                        :options="domainOptions"/>
+                        :options="domainOptions">
+                <template v-slot:selected>
+                  <div class="ellipsis">{{ currentDomain.label }}</div>
+                </template>
+              </q-select>
             </div>
           </div>
         </q-toolbar>

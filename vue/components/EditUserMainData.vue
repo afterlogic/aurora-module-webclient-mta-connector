@@ -33,7 +33,11 @@
       <div class="q-ml-sm">@</div>
       <div class="col-3 q-ml-sm">
         <q-select outlined dense bg-color="white" v-model="selectedDomain"
-                  emit-value map-options :options="domains" option-label="name"/>
+                  emit-value map-options :options="domains" option-label="name">
+          <template v-slot:selected>
+            <div class="ellipsis">{{ selectedDomain.name }}</div>
+          </template>
+        </q-select>
       </div>
     </div>
     <div class="row q-mb-md" v-if="createMode">

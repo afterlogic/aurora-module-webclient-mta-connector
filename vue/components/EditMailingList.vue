@@ -43,7 +43,11 @@
             </div>
             <div class="q-ml-sm">@</div>
             <div class="col-3 q-ml-sm">
-              <q-select outlined dense bg-color="white" v-model="currentDomain" :options="currentDomains"/>
+              <q-select outlined dense bg-color="white" v-model="currentDomain" :options="currentDomains">
+                <template v-slot:selected>
+                  <div class="ellipsis">{{ currentDomain.label }}</div>
+                </template>
+              </q-select>
             </div>
           </div>
         </q-card-section>
