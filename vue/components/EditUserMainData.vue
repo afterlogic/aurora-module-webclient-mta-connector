@@ -10,11 +10,8 @@
     <div class="row q-mb-md" v-if="!createMode">
       <div class="col-2 q-my-sm" v-t="'COREWEBCLIENT.LABEL_PASSWORD'"></div>
       <div class="col-5">
-        <!-- fake fields are a workaround to prevent auto-filling and saving passwords in Firefox -->
-        <input style="display:none" type="text" name="fakeusernameremembered"/>
-        <input style="display:none" type="password" name="fakepasswordremembered"/>
-        <q-input outlined dense bg-color="white" v-model="password" type="password"
-                 autocomplete="off" @keyup.enter="save"/>
+        <q-input outlined dense bg-color="white" type="password" autocomplete="new-password"
+                 v-model="password" @keyup.enter="save" />
       </div>
     </div>
     <div class="row q-mb-md" v-if="!createMode">
@@ -43,11 +40,8 @@
     <div class="row q-mb-md" v-if="createMode">
       <div class="col-2 q-my-sm" v-t="'COREWEBCLIENT.LABEL_PASSWORD'"></div>
       <div class="col-3">
-        <!-- fake fields are a workaround to prevent auto-filling and saving passwords in Firefox -->
-        <input style="display:none" type="text" name="fakeusernameremembered"/>
-        <input style="display:none" type="password" name="fakepasswordremembered"/>
-        <q-input outlined dense bg-color="white" v-model="password" type="password"
-                 autocomplete="off" @keyup.enter="save"/>
+        <q-input outlined dense bg-color="white" type="password" autocomplete="new-password"
+                 v-model="password" @keyup.enter="save"/>
       </div>
     </div>
     <div class="row q-mb-md" v-if="createMode">
