@@ -54,14 +54,14 @@
       </q-card>
       <div class="q-pt-md text-right">
         <q-btn v-if="!createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="negative"
-               :label="deleting ? $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST') : $t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST')" @click="deleteMailingList"/>
+               :label="$t('MTACONNECTORWEBCLIENT.ACTION_DELETE_MAILINGLIST')" @click="deleteMailingList"/>
         <q-btn v-if="createMode" :disable="!mailingListEmail.length || !currentDomain" unelevated no-caps dense class="q-px-sm q-mr-sm" :ripple="false" color="primary"
-               :label="creating ? $t('COREWEBCLIENT.ACTION_CREATE_IN_PROGRESS') : $t('COREWEBCLIENT.ACTION_CREATE')" @click="handleCreateMailingList"/>
+               :label="$t('COREWEBCLIENT.ACTION_CREATE')" @click="handleCreateMailingList"/>
         <q-btn v-if="createMode" unelevated no-caps dense class="q-px-sm" :ripple="false" color="secondary"
                :label="$t('COREWEBCLIENT.ACTION_CANCEL')" @click="cancel"/>
       </div>
     </div>
-    <q-inner-loading style="justify-content: flex-start;" :showing="loading || saving || deleting">
+    <q-inner-loading style="justify-content: flex-start;" :showing="loading || saving || creating || deleting">
       <q-linear-progress query />
     </q-inner-loading>
   </q-scroll-area>
