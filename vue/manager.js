@@ -1,7 +1,13 @@
+import settings from './settings'
+
 export default {
   moduleName: 'MtaConnectorWebclient',
 
   requiredModules: ['MtaConnector', 'MailDomains'],
+
+  init (appData) {
+    settings.init(appData)
+  },
 
   getPages () {
     return [
@@ -15,6 +21,7 @@ export default {
       }
     ]
   },
+
   getAdminUserTabs () {
     return [
       {
@@ -32,6 +39,7 @@ export default {
       },
     ]
   },
+
   getUserMainDataComponent () {
     return import('./components/EditUserMainData')
   },

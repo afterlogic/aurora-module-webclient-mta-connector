@@ -28,7 +28,7 @@
                  @keyup.enter="save"/>
       </div>
       <div class="q-ml-sm">@</div>
-      <div class="col-3 q-ml-sm">
+      <div class="col-3 q-ml-sm" v-if="selectedDomain">
         <q-select outlined dense bg-color="white" v-model="selectedDomain"
                   emit-value map-options :options="domains" option-label="name">
           <template v-slot:selected>
@@ -55,6 +55,8 @@
 
 <script>
 import typesUtils from 'src/utils/types'
+
+import settings from '../settings'
 
 const FAKE_PASS = '     '
 
@@ -129,7 +131,7 @@ export default {
         this.publicId = ''
         this.password = ''
         this.savedPass = ''
-        this.quotaMb = ''
+        this.quotaMb = settings.getUserDefaultQuotaMB() > 0 ? settings.getUserDefaultQuotaMB() : ''
         if (this.selectedDomain === null && this.domains.length > 0) {
           this.selectedDomain = this.domains[0]
         }
