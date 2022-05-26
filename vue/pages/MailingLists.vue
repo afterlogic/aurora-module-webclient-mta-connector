@@ -1,46 +1,48 @@
 <template>
-  <q-splitter class="full-height full-width" after-class="q-splitter__right-panel" v-model="listSplitterWidth"
-              :limits="[10,30]">
-    <template v-slot:before>
-      <div class="flex column full-height">
-        <q-toolbar class="col-auto q-my-sm">
-          <div class="flex">
-            <q-btn flat color="grey-8" size="mg" no-wrap :disable="checkedIds.length === 0"
-                   @click="askDeleteCheckedMailingLists">
-              <Trash></Trash>
-              <span>{{ countLabel }}</span>
-              <q-tooltip>
-                {{ $t('COREWEBCLIENT.ACTION_DELETE') }}
-              </q-tooltip>
-            </q-btn>
-            <q-btn flat color="grey-8" size="mg" @click="routeCreateMailingList">
-              <Add></Add>
-              <q-tooltip>
-                {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
-              </q-tooltip>
-            </q-btn>
-            <div>
-              <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain"
-                        :options="domainOptions">
-                <template v-slot:selected>
-                  <div class="ellipsis">{{ currentDomain.label }}</div>
-                </template>
-              </q-select>
+  <main-layout>
+    <q-splitter class="full-height full-width" after-class="q-splitter__right-panel" v-model="listSplitterWidth"
+                :limits="[10,30]">
+      <template v-slot:before>
+        <div class="flex column full-height">
+          <q-toolbar class="col-auto q-my-sm">
+            <div class="flex">
+              <q-btn flat color="grey-8" size="mg" no-wrap :disable="checkedIds.length === 0"
+                     @click="askDeleteCheckedMailingLists">
+                <Trash></Trash>
+                <span>{{ countLabel }}</span>
+                <q-tooltip>
+                  {{ $t('COREWEBCLIENT.ACTION_DELETE') }}
+                </q-tooltip>
+              </q-btn>
+              <q-btn flat color="grey-8" size="mg" @click="routeCreateMailingList">
+                <Add></Add>
+                <q-tooltip>
+                  {{ $t('MTACONNECTORWEBCLIENT.HEADING_CREATE_MAILINGLIST') }}
+                </q-tooltip>
+              </q-btn>
+              <div>
+                <q-select outlined dense class="domains-select" bg-color="white" v-model="currentDomain"
+                          :options="domainOptions">
+                  <template v-slot:selected>
+                    <div class="ellipsis">{{ currentDomain.label }}</div>
+                  </template>
+                </q-select>
+              </div>
             </div>
-          </div>
-        </q-toolbar>
-        <StandardList class="col-grow" :items="mailingListsItems" :selectedItem="selectedMailingListId" :loading="loadingMailingLists"
-                      :search="search" :page="page" :pagesCount="pagesCount"
-                      ref="mailingList" @route="route" @check="afterCheck"/>
-      </div>
-    </template>
-    <template v-slot:after>
-      <router-view @mailinglist-created="handleCreateMailingList"
-                   @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds"
-                   :domains="domainOptions" :domain="currentDomain"/>
-    </template>
-    <ConfirmDialog ref="confirmDialog"/>
-  </q-splitter>
+          </q-toolbar>
+          <StandardList class="col-grow" :items="mailingListsItems" :selectedItem="selectedMailingListId" :loading="loadingMailingLists"
+                        :search="search" :page="page" :pagesCount="pagesCount"
+                        ref="mailingList" @route="route" @check="afterCheck"/>
+        </div>
+      </template>
+      <template v-slot:after>
+        <router-view @mailinglist-created="handleCreateMailingList"
+                     @cancel-create="route" @delete-mailingList="askDeleteMailingList" :deletingIds="deletingIds"
+                     :domains="domainOptions" :domain="currentDomain"/>
+      </template>
+      <ConfirmDialog ref="confirmDialog"/>
+    </q-splitter>
+  </main-layout>
 </template>
 
 <script>
@@ -50,23 +52,25 @@ import errors from 'src/utils/errors'
 import notification from 'src/utils/notification'
 import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
-import Empty from 'src/components/Empty'
 import cache from '../cache'
 
+import MainLayout from 'src/layouts/MainLayout'
 import ConfirmDialog from 'src/components/ConfirmDialog'
 import StandardList from 'src/components/StandardList'
-import EditMailingList from '../components/EditMailingList'
 import Add from 'src/assets/icons/Add'
 import Trash from 'src/assets/icons/Trash'
 
 export default {
-  name: 'Mailing',
+  name: 'MailingLists',
+
   components: {
+    MainLayout,
     ConfirmDialog,
     StandardList,
     Add,
     Trash
   },
+
   data () {
     return {
       mailingLists: [],
@@ -88,6 +92,7 @@ export default {
       listSplitterWidth: localStorage.getItem('mailing-lists-list-splitter-width') || 20,
     }
   },
+
   computed: {
     currentTenantId () {
       return this.$store.getters['tenants/getCurrentTenantId']
@@ -101,11 +106,13 @@ export default {
     pagesCount () {
       return Math.ceil(this.totalCount / this.limit)
     },
+
     countLabel () {
       const count = this.checkedIds.length
       return count > 0 ? count : ''
     },
   },
+
   watch: {
     domains (domains) {
       this.domainOptions = domains.map(domain => {
@@ -116,13 +123,42 @@ export default {
       })
       this.domainOptions.unshift(this.currentDomain)
     },
+
     currentTenantId () {
       this.populate()
     },
+
     currentDomain () {
       this.getMailingLists()
     },
+
     $route (to, from) {
+      this.parseRoute()
+    },
+
+    mailingLists () {
+      this.mailingListsItems = this.mailingLists.map(mailingList => {
+        return {
+          id: mailingList.id,
+          title: mailingList.name,
+          rightText: mailingList.count,
+          checked: false,
+        }
+      })
+    },
+
+    listSplitterWidth () {
+      localStorage.setItem('mailing-lists-list-splitter-width', this.listSplitterWidth)
+    }
+  },
+
+  mounted () {
+    this.populate()
+    this.parseRoute()
+  },
+
+  methods: {
+    parseRoute () {
       if (this.$route.path === '/mailinglists/create') {
         this.selectedMailingListId = 0
       } else {
@@ -139,37 +175,13 @@ export default {
         }
       }
     },
-    mailingLists () {
-      this.mailingListsItems = this.mailingLists.map(mailingList => {
-        return {
-          id: mailingList.id,
-          title: mailingList.name,
-          rightText: mailingList.count,
-          checked: false,
-        }
-      })
-    },
-    listSplitterWidth () {
-      localStorage.setItem('mailing-lists-list-splitter-width', this.listSplitterWidth)
-    }
-  },
-  mounted () {
-    this.$router.addRoute('mailinglists', { path: 'id/:id', component: EditMailingList })
-    this.$router.addRoute('mailinglists', { path: 'create', component: EditMailingList })
-    this.$router.addRoute('mailinglists', { path: 'search/:search', component: Empty })
-    this.$router.addRoute('mailinglists', { path: 'search/:search/id/:id', component: EditMailingList })
-    this.$router.addRoute('mailinglists', { path: 'page/:page', component: Empty })
-    this.$router.addRoute('mailinglists', { path: 'page/:page/id/:id', component: EditMailingList })
-    this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page', component: Empty })
-    this.$router.addRoute('mailinglists', { path: 'search/:search/page/:page/id/:id', component: EditMailingList })
-    this.populate()
-  },
-  methods: {
+
     populate () {
       this.loadingMailingLists = true
       this.requestDomains()
       this.getMailingLists()
     },
+
     getMailingLists () {
       cache.getPagedMailingLists(this.currentTenantId, this.search, this.page, this.limit, this.currentDomain.value).then(({ mailingLists, totalCount, tenantId, search, page, limit }) => {
         if (page === this.page && search === this.search) {
@@ -181,6 +193,7 @@ export default {
         }
       })
     },
+
     route (mailingListId = 0) {
       const enteredSearch = this.$refs?.mailingList?.enteredSearch || ''
       const searchRoute = enteredSearch !== '' ? `/search/${enteredSearch}` : ''
@@ -195,28 +208,35 @@ export default {
         this.$router.push(path)
       }
     },
+
     requestDomains () {
       this.$store.dispatch('maildomains/requestDomains', {
         tenantId: this.currentTenantId
       })
     },
+
     routeCreateMailingList() {
       this.$router.push('/mailinglists/create')
     },
+
     handleCreateMailingList (id) {
       this.justCreatedId = id
       this.route()
       this.populate()
     },
+
     afterCheck (ids) {
       this.checkedIds = ids
     },
+
     askDeleteMailingList (id) {
       this.askDeleteMailingLists([id])
     },
+
     askDeleteCheckedMailingLists () {
       this.askDeleteMailingLists(this.checkedIds)
     },
+
     askDeleteMailingLists (ids) {
       if (_.isFunction(this?.$refs?.confirmDialog?.openDialog)) {
         const mailingList = ids.length === 1
@@ -232,6 +252,7 @@ export default {
         })
       }
     },
+
     deleteMailingLists (ids) {
       this.deletingIds = ids
       this.loadingMailingLists = true
