@@ -32,7 +32,7 @@ export default {
           { path: 'search/:search/page/:page', component: Empty },
           { path: 'search/:search/page/:page/id/:id', component: EditMailingList },
         ],
-        pageUserRole: UserRoles.SuperAdmin,
+        pageUserRoles: [UserRoles.SuperAdmin],
         pageTitle: 'MTACONNECTORWEBCLIENT.HEADING_MAILINGLISTS_SETTINGS_TABNAME',
       }
     ]
