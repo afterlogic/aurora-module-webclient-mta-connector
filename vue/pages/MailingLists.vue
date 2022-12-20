@@ -89,7 +89,7 @@ export default {
       checkedIds: [],
       justCreatedId: 0,
       deletingIds: [],
-      listSplitterWidth: localStorage.getItem('mailing-lists-list-splitter-width') || 20,
+      listSplitterWidth: localStorage.getItem('aurora_admin_mailing_lists_splitter-width') || 20,
     }
   },
 
@@ -148,7 +148,7 @@ export default {
     },
 
     listSplitterWidth () {
-      localStorage.setItem('mailing-lists-list-splitter-width', this.listSplitterWidth)
+      localStorage.setItem('aurora_admin_mailing_lists_splitter-width', this.listSplitterWidth)
     }
   },
 
