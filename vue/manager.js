@@ -19,10 +19,10 @@ export default {
     const UserRoles = enums.getUserRoles()
     return [
       {
-        pageName: 'mailinglists',
-        pagePath: '/mailinglists',
-        pageComponent: () => import('./pages/MailingLists'),
-        pageChildren: [
+        name: 'mailinglists',
+        path: '/mailinglists',
+        component: () => import('./pages/MailingLists'),
+        children: [
           { path: 'id/:id', component: EditMailingList },
           { path: 'create', component: EditMailingList },
           { path: 'search/:search', component: Empty },
