@@ -15,7 +15,7 @@ export default {
     settings.init(appData)
   },
 
-  getPages () {
+  getRoutes () {
     const UserRoles = enums.getUserRoles()
     return [
       {
