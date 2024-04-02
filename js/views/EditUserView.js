@@ -28,8 +28,6 @@ function CEditUserView()
 	this.selectedDomain = ko.observable(null);
 	this.password = ko.observable('');
 	this.quota = ko.observable(Settings.UserDefaultQuotaMB);
-	// this.bAllowMakeTenant = Settings.EnableMultiTenant && App.getUserRole() === Enums.UserRole.SuperAdmin;
-	this.bAllowMakeTenant = false;
 	this.tenantAdminSelected = ko.observable(false);
 	this.writeSeparateLog = ko.observable(false);
 	this.QuotaKiloMultiplier = 1024;
