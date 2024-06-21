@@ -259,8 +259,7 @@ export default {
       const parameters = {
         IdList: ids,
         Type: 'MailingList',
-        TenantId: this.currentTenantId,
-        DeletionConfirmedByAdmin: true
+        TenantId: this.currentTenantId
       }
       webApi.sendRequest({
         moduleName: 'MtaConnector',
